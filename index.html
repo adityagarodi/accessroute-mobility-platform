@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AccessRoute – Real-time accessible public mobility assistance for people with mobility, visual, hearing, or cognitive accessibility requirements." />
+  <title>AccessRoute – Accessible Journeys for Everyone</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body class="landing-body">
+
+  <!-- Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ── Navigation ── -->
+  <nav class="landing-nav" aria-label="Main navigation">
+    <div class="landing-nav-inner">
+      <a href="index.html" class="landing-logo" aria-label="AccessRoute home">
+        <div class="logo-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
+        <span class="logo-name">AccessRoute</span>
+      </a>
+      <div class="landing-nav-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#accessibility">Accessibility</a>
+        <a href="dashboard.html" class="btn btn-primary btn-sm" style="margin-left:0.5rem;">Open Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <main id="main-content">
+    <section class="hero-section" aria-labelledby="hero-heading">
+      <div class="hero-inner">
+        <!-- Left -->
+        <div class="hero-content">
+          <div class="hero-eyebrow">
+            <i class="fa-solid fa-wheelchair" aria-hidden="true"></i>
+            PS-B04 · Real-Time Accessible Mobility
+          </div>
+
+          <h1 class="hero-title" id="hero-heading">
+            Accessible journeys<br />
+            for <span class="accent">everyone.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Real-time public-mobility assistance that adapts to accessibility needs and infrastructure changes — so every journey is reliable, informed, and inclusive.
+          </p>
+
+          <div class="hero-actions">
+            <a href="routes.html" class="btn btn-accent btn-xl">
+              <i class="fa-solid fa-route" aria-hidden="true"></i>
+              Plan Accessible Route
+            </a>
+            <a href="dashboard.html" class="btn btn-outline btn-xl">
+              <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
+              Explore Dashboard
+            </a>
+          </div>
+
+          <div class="hero-social-proof" role="list" aria-label="Platform statistics">
+            <div class="proof-item" role="listitem">
+              <span class="proof-val">15+</span>
+              <span class="proof-label">Facility Types</span>
+            </div>
+            <div class="proof-divider" aria-hidden="true"></div>
+            <div class="proof-item" role="listitem">
+              <span class="proof-val">94%</span>
+              <span class="proof-label">Accessibility Score</span>
+            </div>
+            <div class="proof-divider" aria-hidden="true"></div>
+            <div class="proof-item" role="listitem">
+              <span class="proof-val">Real-time</span>
+              <span class="proof-label">Route Updates</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right – Visual Demo -->
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-card-demo">
+            <div class="hero-map-placeholder">
+              <div id="hero-map"></div>
+            </div>
+
+            <!-- Mini route card -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.75rem;">
+              <div>
+                <div style="font-size:0.7rem;color:var(--color-text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Active Route</div>
+                <div style="font-weight:700;font-size:0.95rem;color:var(--color-text);margin-top:2px;">Pune Station → College</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.5rem;font-weight:700;color:var(--color-primary);">28 <span style="font-size:0.8rem;font-weight:500;">min</span></div>
+                <span class="status-pill status-available" style="font-size:10px;">Step-free</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+              <span style="font-size:11px;background:var(--color-accent-faint);color:var(--color-accent);padding:3px 8px;border-radius:20px;font-weight:600;">
+                <i class="fa-solid fa-elevator"></i> Elevator OK
+              </span>
+              <span style="font-size:11px;background:var(--color-success-bg);color:var(--color-success);padding:3px 8px;border-radius:20px;font-weight:600;">
+                <i class="fa-solid fa-bus"></i> Low-floor bus
+              </span>
+              <span style="font-size:11px;background:#e8edf5;color:var(--color-primary);padding:3px 8px;border-radius:20px;font-weight:600;">
+                94% Accessible
+              </span>
+            </div>
+          </div>
+
+          <div class="floating-badge badge-1">
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--color-warning);" aria-hidden="true"></i>
+            Route recalculated
+          </div>
+          <div class="floating-badge badge-2">
+            <i class="fa-solid fa-circle-check" style="color:var(--color-success);" aria-hidden="true"></i>
+            Elevator verified
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section id="how-it-works" aria-labelledby="hiw-heading" style="background:var(--color-white);">
+      <div class="section-container">
+        <div class="section-eyebrow"><i class="fa-solid fa-list-check" aria-hidden="true"></i> How It Works</div>
+        <h2 class="section-heading" id="hiw-heading">Four steps to every accessible journey</h2>
+        <p class="section-body">AccessRoute combines real-time infrastructure data, community reports, and your personal accessibility profile to guide you every step of the way.</p>
+
+        <div class="steps-grid" role="list">
+          <div class="step-item" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-title">Set Your Profile</div>
+            <div class="step-body">Enter your accessibility needs once. We remember wheelchair requirements, elevator preference, low-floor buses, and more.</div>
+          </div>
+          <div class="step-item" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-title">Plan Your Route</div>
+            <div class="step-body">Enter destination. We calculate multiple accessible options ranked by accessibility score, ETA, and walking distance.</div>
+          </div>
+          <div class="step-item" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-title">Live Monitoring</div>
+            <div class="step-body">Infrastructure changes are tracked in real time — elevators, ramps, accessible toilets, low-floor bus arrivals.</div>
+          </div>
+          <div class="step-item" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-title">Auto Rerouting</div>
+            <div class="step-body">When a facility fails mid-journey, AccessRoute instantly recalculates an alternative accessible route and notifies you.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Features ── -->
+    <section id="features" aria-labelledby="features-heading" style="background:var(--color-bg);">
+      <div class="section-container">
+        <div class="section-eyebrow"><i class="fa-solid fa-star" aria-hidden="true"></i> Features</div>
+        <h2 class="section-heading" id="features-heading">Built for real-world accessibility</h2>
+        <p class="section-body">Every feature is designed with accessibility-first principles, WCAG-compliant design, and real operational challenges in mind.</p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon navy" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></div>
+            <h3 class="feature-title">Interactive Accessible Map</h3>
+            <p class="feature-body">Live OpenStreetMap view showing elevators, ramps, accessible toilets, bus stops, stations, and verified facility statuses.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon teal" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
+            <h3 class="feature-title">Smart Route Planning</h3>
+            <p class="feature-body">Compare routes by accessibility score, ETA, walking distance, and transfer count. Every route detail is presented clearly.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon green" aria-hidden="true"><i class="fa-solid fa-rotate"></i></div>
+            <h3 class="feature-title">Automatic Rerouting</h3>
+            <p class="feature-body">When infrastructure fails — elevator down, ramp blocked — the system instantly detects the impact and recalculates your route.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon amber" aria-hidden="true"><i class="fa-solid fa-people-group"></i></div>
+            <h3 class="feature-title">Community Verification</h3>
+            <p class="feature-body">Community reports for real-world conditions are clearly labelled and separated from official verified data.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon blue" aria-hidden="true"><i class="fa-solid fa-volume-high"></i></div>
+            <h3 class="feature-title">Voice Guidance</h3>
+            <p class="feature-body">Browser Web Speech API delivers turn-by-turn voice guidance with multilingual support: English, Hindi, and Marathi.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon purple" aria-hidden="true"><i class="fa-solid fa-user-gear"></i></div>
+            <h3 class="feature-title">Personalised Profile</h3>
+            <p class="feature-body">Save your accessibility requirements once. Routes, facility filters, and alerts all adapt to your personal preferences automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Accessibility Commitment ── -->
+    <section id="accessibility" aria-labelledby="a11y-heading" style="background:var(--color-white);">
+      <div class="section-container">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;" class="a11y-split">
+          <div>
+            <div class="section-eyebrow"><i class="fa-solid fa-universal-access" aria-hidden="true"></i> Accessibility First</div>
+            <h2 class="section-heading" id="a11y-heading">Designed for every ability</h2>
+            <p class="section-body">AccessRoute is built with WCAG-conscious color contrast, keyboard navigation, ARIA labels, visible focus states, and reduced-motion support throughout.</p>
+            <ul style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.75rem;" aria-label="Accessibility features">
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                Wheelchair accessible route planning
+              </li>
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                Voice guidance via Web Speech API
+              </li>
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                High contrast and large font modes
+              </li>
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                Reduced motion option for vestibular sensitivity
+              </li>
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                Screen reader optimised with semantic HTML &amp; ARIA
+              </li>
+              <li style="display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--color-text);">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);width:16px;" aria-hidden="true"></i>
+                English, Hindi &amp; Marathi language support
+              </li>
+            </ul>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="card" style="text-align:center;padding:1.5rem 1rem;">
+              <div style="font-size:2rem;color:var(--color-accent);margin-bottom:0.5rem;"><i class="fa-solid fa-eye" aria-hidden="true"></i></div>
+              <div style="font-weight:700;color:var(--color-text);font-size:0.95rem;">Visual</div>
+              <div style="font-size:0.8rem;color:var(--color-text-muted);">High contrast, large text, visual alerts</div>
+            </div>
+            <div class="card" style="text-align:center;padding:1.5rem 1rem;">
+              <div style="font-size:2rem;color:var(--color-accent);margin-bottom:0.5rem;"><i class="fa-solid fa-ear-deaf" aria-hidden="true"></i></div>
+              <div style="font-weight:700;color:var(--color-text);font-size:0.95rem;">Hearing</div>
+              <div style="font-size:0.8rem;color:var(--color-text-muted);">Visual alerts, captioned guidance</div>
+            </div>
+            <div class="card" style="text-align:center;padding:1.5rem 1rem;">
+              <div style="font-size:2rem;color:var(--color-accent);margin-bottom:0.5rem;"><i class="fa-solid fa-wheelchair" aria-hidden="true"></i></div>
+              <div style="font-weight:700;color:var(--color-text);font-size:0.95rem;">Mobility</div>
+              <div style="font-size:0.8rem;color:var(--color-text-muted);">Step-free, elevator &amp; ramp routes</div>
+            </div>
+            <div class="card" style="text-align:center;padding:1.5rem 1rem;">
+              <div style="font-size:2rem;color:var(--color-accent);margin-bottom:0.5rem;"><i class="fa-solid fa-brain" aria-hidden="true"></i></div>
+              <div style="font-weight:700;color:var(--color-text);font-size:0.95rem;">Cognitive</div>
+              <div style="font-size:0.8rem;color:var(--color-text-muted);">Simple steps, clear icons, calm UI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-inner">
+        <h2 class="cta-title" id="cta-heading">Make every journey accessible.</h2>
+        <p class="cta-body">Join the movement for inclusive public transport. Plan routes that respect your accessibility needs — every time.</p>
+        <div class="cta-actions">
+          <a href="routes.html" class="btn btn-white btn-xl">
+            <i class="fa-solid fa-route" aria-hidden="true"></i>
+            Plan Accessible Route
+          </a>
+          <a href="dashboard.html" class="btn btn-outline-white btn-xl">
+            <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
+            Open Dashboard
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="landing-footer">
+    <p>
+      &copy; 2026 <strong style="color:rgba(255,255,255,0.9);">AccessRoute</strong> &mdash;
+      PS-B04 Real-Time Accessible Public-Mobility Assistance &mdash;
+      <em style="opacity:0.7;">Accessible journeys. Reliable routes. Everyone included.</em>
+    </p>
+    <p style="margin-top:0.5rem;font-size:0.75rem;opacity:0.5;">
+      Built with OpenStreetMap, Leaflet.js, Chart.js &amp; Web Speech API &mdash; No backend required
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Hero mini map
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const heroMap = L.map('hero-map', {
+          center: [18.522, 73.856],
+          zoom: 13,
+          zoomControl: false,
+          scrollWheelZoom: false,
+          dragging: false,
+          attributionControl: false
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19
+        }).addTo(heroMap);
+
+        // Route line
+        const pts = AR_DATA.routes[0].waypoints.map(p => [p.lat, p.lng]);
+        L.polyline(pts, { color: '#0d9488', weight: 4, opacity: 0.9 }).addTo(heroMap);
+
+        // Origin marker
+        L.circleMarker([18.5284, 73.8742], { radius: 8, color: '#1e3a5f', fillColor: '#1e3a5f', fillOpacity: 1 })
+          .addTo(heroMap).bindPopup('Pune Station');
+        // Destination marker
+        L.circleMarker([18.5190, 73.8450], { radius: 8, color: '#dc2626', fillColor: '#dc2626', fillOpacity: 1 })
+          .addTo(heroMap).bindPopup('Fergusson College');
+      } catch (e) { /* map not critical on landing */ }
+    });
+  </script>
+</body>
+</html>

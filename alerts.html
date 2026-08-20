@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Live disruption alerts and automatic rerouting for accessible public transport." />
+  <title>Live Alerts – AccessRoute</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+<div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+<div class="app-shell">
+  <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">
+      <div class="logo-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
+      <div class="logo-text"><span class="logo-name">AccessRoute</span><span class="logo-tagline">Everyone included.</span></div>
+    </div>
+    <nav class="sidebar-nav" aria-label="Site navigation">
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard.html"  class="nav-item" data-page="dashboard.html">  <span class="nav-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span><span class="nav-label">Dashboard</span></a>
+      <a href="routes.html"     class="nav-item" data-page="routes.html">     <span class="nav-icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span><span class="nav-label">Plan Route</span></a>
+      <a href="facilities.html" class="nav-item" data-page="facilities.html"> <span class="nav-icon"><i class="fa-solid fa-building" aria-hidden="true"></i></span><span class="nav-label">Facilities</span></a>
+      <a href="alerts.html"     class="nav-item" data-page="alerts.html">     <span class="nav-icon"><i class="fa-solid fa-bell" aria-hidden="true"></i></span><span class="nav-label">Live Alerts</span><span class="nav-badge alert-count">2</span></a>
+      <div class="nav-section-label">Personal</div>
+      <a href="profile.html"    class="nav-item" data-page="profile.html">    <span class="nav-icon"><i class="fa-solid fa-user-gear" aria-hidden="true"></i></span><span class="nav-label">Accessibility Profile</span></a>
+      <a href="settings.html"   class="nav-item" data-page="settings.html">   <span class="nav-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></span><span class="nav-label">Settings</span></a>
+      <div class="nav-section-label">Support</div>
+      <a href="#" class="nav-item" onclick="AR_toast('Help centre coming soon.','info','Help');return false;"><span class="nav-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></span><span class="nav-label">Help &amp; Support</span></a>
+      <a href="#" class="nav-item" onclick="AR_toast('Opening trusted contact…','info','Trusted Contact');return false;"><span class="nav-icon"><i class="fa-solid fa-heart" aria-hidden="true"></i></span><span class="nav-label">Trusted Contact</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user" role="button" tabindex="0" onclick="window.location='profile.html'">
+        <div class="user-avatar" aria-hidden="true">A</div>
+        <div class="user-info"><div class="user-name">Aditya</div><div class="user-role">Accessibility User</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar" role="banner">
+      <div class="topbar-left">
+        <button id="hamburger-btn" class="hamburger" aria-label="Open navigation menu" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+        <div class="topbar-title">Live Alerts</div>
+      </div>
+      <div class="topbar-right">
+        <button id="voice-toggle-btn" class="icon-btn" aria-label="Toggle voice guidance" aria-pressed="false"><i class="fa-solid fa-volume-xmark" aria-hidden="true"></i></button>
+        <a href="settings.html" class="icon-btn" aria-label="Settings"><i class="fa-solid fa-sliders" aria-hidden="true"></i></a>
+      </div>
+    </header>
+
+    <main id="main-content" class="page-body">
+      <div class="page-header flex-between" style="flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 class="page-heading">Live Alerts</h1>
+          <p class="page-subheading">Real-time disruptions, infrastructure changes, and community reports</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <span id="alerts-live-indicator" style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:var(--color-success);">
+            <span style="width:8px;height:8px;background:var(--color-success);border-radius:50%;animation:pulse 2s infinite;" aria-hidden="true"></span>
+            Live Updates Active
+          </span>
+          <button class="btn btn-outline btn-sm" onclick="AR_Alerts.dismissAll()" aria-label="Dismiss all resolved alerts">
+            <i class="fa-solid fa-check-double" aria-hidden="true"></i> Mark All Read
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar" role="group" aria-label="Filter alerts" style="margin-bottom:1.5rem;">
+        <button class="filter-btn active" data-alert-filter="all"    onclick="AR_Alerts.filter('all')"   >All</button>
+        <button class="filter-btn"        data-alert-filter="high"   onclick="AR_Alerts.filter('high')"  ><i class="fa-solid fa-circle-xmark" style="color:var(--color-danger);" aria-hidden="true"></i> High</button>
+        <button class="filter-btn"        data-alert-filter="medium" onclick="AR_Alerts.filter('medium')"><i class="fa-solid fa-triangle-exclamation" style="color:var(--color-warning);" aria-hidden="true"></i> Medium</button>
+        <button class="filter-btn"        data-alert-filter="low"    onclick="AR_Alerts.filter('low')"   ><i class="fa-solid fa-circle-info" style="color:var(--color-success);" aria-hidden="true"></i> Low</button>
+        <button class="filter-btn"        data-alert-filter="route"  onclick="AR_Alerts.filter('route')" >Affecting My Route</button>
+      </div>
+
+      <!-- Alert List -->
+      <div id="alerts-list" role="list" aria-label="Live alerts" aria-live="polite" style="display:flex;flex-direction:column;gap:1rem;"></div>
+
+      <!-- ── Automatic Rerouting Demo ── -->
+      <div class="reroute-demo-panel" role="region" aria-labelledby="demo-heading">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+          <div style="width:36px;height:36px;background:var(--color-primary);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:white;" aria-hidden="true">
+            <i class="fa-solid fa-rotate"></i>
+          </div>
+          <div>
+            <div class="demo-title" id="demo-heading">Automatic Rerouting Demo</div>
+            <div class="demo-subtitle">This interactive demo shows how AccessRoute responds to infrastructure failure in real time.</div>
+          </div>
+        </div>
+
+        <!-- Step 1 – Initial route -->
+        <div id="demo-step-1">
+          <div style="background:var(--color-bg);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;border:1px solid var(--color-border);">
+            <div style="font-size:0.75rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;">Current Active Route</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+              <div>
+                <div style="font-size:1.1rem;font-weight:700;color:var(--color-text);">Pune Station → Fergusson College</div>
+                <div style="font-size:0.875rem;color:var(--color-text-muted);margin-top:0.25rem;">Via Bus 15 (Low-floor) · 1 Transfer</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:2rem;font-weight:700;color:var(--color-primary);" id="demo-eta-display">24 <span style="font-size:0.9rem;font-weight:500;">min</span></div>
+                <span class="status-pill status-available">94% Accessible</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem;">
+              <span class="rr-feature yes"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Step-free</span>
+              <span class="rr-feature yes" id="demo-elevator-feature"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Elevator available</span>
+              <span class="rr-feature yes"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Low-floor bus</span>
+            </div>
+          </div>
+          <button class="btn btn-danger btn-lg" onclick="AR_Alerts.triggerDemo()" aria-label="Simulate elevator failure" id="btn-trigger-demo">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Simulate: Elevator #2 Fails
+          </button>
+        </div>
+
+        <!-- Step 2 – Disruption (hidden initially) -->
+        <div id="demo-step-2" class="hidden" role="alert" aria-live="assertive">
+          <div style="background:var(--color-danger-bg);border:2px solid var(--color-danger);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;">
+            <div style="display:flex;align-items:flex-start;gap:1rem;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size:1.8rem;color:var(--color-danger);flex-shrink:0;" aria-hidden="true"></i>
+              <div>
+                <div style="font-weight:700;font-size:1.1rem;color:var(--color-danger);margin-bottom:0.25rem;">Station Elevator #2 has become unavailable.</div>
+                <div style="font-size:0.875rem;color:var(--color-text);">Your current accessible route is no longer available. Platform 3–4 elevator is out of service.</div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-bottom:1.25rem;">
+            <button class="btn btn-accent btn-xl" onclick="AR_Alerts.recalculateDemo()" id="btn-demo-recalc" aria-label="Recalculate accessible route">
+              <i class="fa-solid fa-rotate" aria-hidden="true"></i> Recalculate Accessible Route
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3 – Comparison (hidden initially) -->
+        <div id="demo-step-3" class="hidden" aria-live="polite">
+          <div style="background:var(--color-success-bg);border:2px solid var(--color-success);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+              <i class="fa-solid fa-circle-check" style="font-size:1.5rem;color:var(--color-success);" aria-hidden="true"></i>
+              <span style="font-weight:700;font-size:1.1rem;color:var(--color-success);">Alternative accessible route found.</span>
+            </div>
+
+            <div class="reroute-comparison">
+              <div class="comparison-side old">
+                <div class="cs-label">Previous Route</div>
+                <div class="comparison-val">24 min</div>
+                <div class="comparison-desc">Via Platform 3/4 Elevator<br>Accessibility: 94%</div>
+                <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                  <span class="rr-feature no"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> Elevator now down</span>
+                </div>
+              </div>
+
+              <div class="arrow-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></div>
+
+              <div class="comparison-side new">
+                <div class="cs-label">New Route</div>
+                <div class="comparison-val">29 min</div>
+                <div class="comparison-desc">Via North Exit Ramp<br>Accessibility: 92%</div>
+                <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                  <span class="rr-feature yes"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Step-free via ramp</span>
+                  <span class="rr-feature yes"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Low-floor bus</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <a href="routes.html" class="btn btn-accent btn-lg" style="flex:1;">
+              <i class="fa-solid fa-play" aria-hidden="true"></i> Start New Route
+            </a>
+            <button class="btn btn-outline btn-lg" onclick="AR_Alerts.resetDemo()" style="flex:1;">
+              <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-items">
+    <a href="dashboard.html"  class="bottom-nav-item" data-page="dashboard.html"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><span>Dashboard</span></a>
+    <a href="routes.html"     class="bottom-nav-item" data-page="routes.html"><i class="fa-solid fa-route" aria-hidden="true"></i><span>Routes</span></a>
+    <a href="facilities.html" class="bottom-nav-item" data-page="facilities.html"><i class="fa-solid fa-building" aria-hidden="true"></i><span>Facilities</span></a>
+    <a href="alerts.html"     class="bottom-nav-item active" data-page="alerts.html" aria-current="page"><i class="fa-solid fa-bell" aria-hidden="true"></i><span>Alerts</span></a>
+    <a href="profile.html"    class="bottom-nav-item" data-page="profile.html"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Profile</span></a>
+  </div>
+</nav>
+
+<style>
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.5; transform:scale(1.3); }
+}
+</style>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/alerts.js"></script>
+</body>
+</html>
