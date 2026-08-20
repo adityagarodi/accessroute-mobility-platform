@@ -22,7 +22,7 @@ const AR_Facilities = (() => {
     const empty = document.getElementById('facilities-empty');
     if (!list) return;
 
-    let data = [...AR_DATA.facilities];
+    let data = [...AR_FACILITIES];
 
     // Status filter
     if (activeStatusFilter === 'verified')  data = data.filter(f => f.verified);
@@ -62,7 +62,7 @@ const AR_Facilities = (() => {
         : `<span class="badge badge-community"><i class="fa-solid fa-circle" aria-hidden="true"></i> Community Report</span>`;
 
       const updatedAgo  = timeAgo(facility.lastUpdated);
-      const iconClass   = AR_facilityIcon(facility.type);
+      const iconClass   = facilityIcon(facility.type);
       const typeWrap    = facility.type;
 
       card.innerHTML = `
@@ -140,9 +140,9 @@ const AR_Facilities = (() => {
 
   // ── Summary badges ────────────────────────────────────
   function updateSummary() {
-    const avail  = AR_DATA.facilities.filter(f => f.status === 'available').length;
-    const limited = AR_DATA.facilities.filter(f => f.status === 'limited').length;
-    const unavail = AR_DATA.facilities.filter(f => f.status === 'unavailable').length;
+    const avail  = AR_FACILITIES.filter(f => f.status === 'available').length;
+    const limited = AR_FACILITIES.filter(f => f.status === 'limited').length;
+    const unavail = AR_FACILITIES.filter(f => f.status === 'unavailable').length;
 
     const sa = document.getElementById('summary-available');
     const sl = document.getElementById('summary-limited');
@@ -154,15 +154,15 @@ const AR_Facilities = (() => {
 
   // ── Report Issue ───────────────────────────────────────
   function reportIssue(facilityId) {
-    const facility = getFacilityById(facilityId);
+    const facility = AR_FACILITIES.find(f => f.id === facilityId);
     if (!facility) return;
-    AR_toast(`Report submitted for "${facility.name}". Thank you for helping keep the map accurate.`, 'success', 'Report Submitted');
+    toast(`Report submitted for "${facility.name}". Thank you for helping keep the map accurate.`, 'success', 'Report Submitted');
   }
 
   // ── Simulated Real-time Updates ───────────────────────
   function startSimulation() {
     setInterval(() => {
-      const facilities = AR_DATA.facilities;
+      const facilities = AR_FACILITIES;
       const idx = Math.floor(Math.random() * facilities.length);
       const f   = facilities[idx];
       const prev = f.status;
@@ -171,7 +171,7 @@ const AR_Facilities = (() => {
       f.lastUpdated = new Date().toISOString();
 
       if (prev !== f.status) {
-        AR_toast(`${f.name} is now ${f.status}.`,
+        toast(`${f.name} is now ${f.status}.`,
           f.status === 'unavailable' ? 'danger' : f.status === 'limited' ? 'warning' : 'success',
           'Facility Update');
         render();

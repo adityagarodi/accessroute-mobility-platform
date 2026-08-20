@@ -21,7 +21,7 @@ const AR_Alerts = (() => {
     const list = document.getElementById('alerts-list');
     if (!list) return;
 
-    let data = getActiveAlerts();
+    let data = AR_ALERTS.filter(alert => alert.status === 'active');
 
     if (activeFilter === 'high')   data = data.filter(a => a.severity === 'high');
     else if (activeFilter === 'medium') data = data.filter(a => a.severity === 'medium');
@@ -120,34 +120,34 @@ const AR_Alerts = (() => {
 
   // ── Dismiss ────────────────────────────────────────────
   function dismissAlert(alertId) {
-    const alert = AR_DATA.alerts.find(a => a.id === alertId);
+    const alert = AR_ALERTS.find(a => a.id === alertId);
     if (alert) {
       alert.status = 'resolved';
-      AR_toast(`Alert dismissed: "${alert.title}"`, 'success', 'Alert Dismissed');
-      AR_updateAlertBadge();
+      toast(`Alert dismissed: "${alert.title}"`, 'success', 'Alert Dismissed');
+      updateAlertBadge();
       render();
     }
   }
 
   function dismissAll() {
-    AR_DATA.alerts.forEach(a => { a.status = 'resolved'; });
-    AR_toast('All alerts marked as read.', 'success', 'Alerts Cleared');
-    AR_updateAlertBadge();
+    AR_ALERTS.forEach(a => { a.status = 'resolved'; });
+    toast('All alerts marked as read.', 'success', 'Alerts Cleared');
+    updateAlertBadge();
     render();
   }
 
   // ── View Details ───────────────────────────────────────
   function viewDetails(alertId) {
-    const alert = AR_DATA.alerts.find(a => a.id === alertId);
+    const alert = AR_ALERTS.find(a => a.id === alertId);
     if (!alert) return;
-    const facility = alert.affectedFacilityId ? getFacilityById(alert.affectedFacilityId) : null;
-    AR_toast(
+    const facility = alert.affectedFacilityId ? AR_FACILITIES.find(f => f.id === alert.affectedFacilityId) : null;
+    toast(
       `${alert.message}${facility ? ` Last updated: ${timeAgo(facility.lastUpdated)}.` : ''}`,
       alert.severity === 'high' ? 'danger' : alert.severity === 'medium' ? 'warning' : 'info',
       alert.title,
       7000
     );
-    if (AR_voiceEnabled) AR_speak(alert.message);
+    if (voiceOn) speak(alert.message);
   }
 
   // ── Rerouting Demo ─────────────────────────────────────
@@ -159,7 +159,7 @@ const AR_Alerts = (() => {
     if (btn) btn.disabled = true;
 
     // Update facility
-    const elev = getFacilityById('f002');
+    const elev = AR_FACILITIES.find(f => f.id === 'f002');
     if (elev) {
       elev.status = 'unavailable';
       elev.lastUpdated = new Date().toISOString();
@@ -180,13 +180,13 @@ const AR_Alerts = (() => {
       status: 'active',
       actionTaken: false
     };
-    AR_DATA.alerts.unshift(newAlert);
-    AR_updateAlertBadge();
+    AR_ALERTS.unshift(newAlert);
+    updateAlertBadge();
     render();
 
     // Toast + voice
-    AR_toast('Station Elevator #2 has become unavailable. Your route is affected.', 'danger', 'Infrastructure Alert', 8000);
-    AR_speak('Warning. Elevator unavailable. Your current accessible route is no longer available. Please recalculate.');
+    toast('Station Elevator #2 has become unavailable. Your route is affected.', 'danger', 'Infrastructure Alert', 8000);
+    speak('Warning. Elevator unavailable. Your current accessible route is no longer available. Please recalculate.');
 
     // Transition steps
     setTimeout(() => {
@@ -204,8 +204,8 @@ const AR_Alerts = (() => {
     step3 && step3.classList.remove('hidden');
     step3 && step3.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    AR_toast('Route recalculated. New accessible route via North Exit Ramp found.', 'success', 'Route Recalculated', 6000);
-    AR_speak('Route recalculated. Alternative accessible route found via North Exit ramp. New estimated time is 29 minutes. Accessibility score: 92 percent.');
+    toast('Route recalculated. New accessible route via North Exit Ramp found.', 'success', 'Route Recalculated', 6000);
+    speak('Route recalculated. Alternative accessible route found via North Exit ramp. New estimated time is 29 minutes. Accessibility score: 92 percent.');
   }
 
   function resetDemo() {
@@ -220,16 +220,16 @@ const AR_Alerts = (() => {
     if (btn) btn.disabled = false;
 
     // Restore elevator
-    const elev = getFacilityById('f002');
-    if (elev) elev.status = 'unavailable'; // keep as-is
+    const elev = AR_FACILITIES.find(f => f.id === 'f002');
+    if (elev) elev.status = 'available';
 
     // Remove demo alert
-    const idx = AR_DATA.alerts.findIndex(a => a.id === 'a_demo');
-    if (idx > -1) AR_DATA.alerts.splice(idx, 1);
-    AR_updateAlertBadge();
+    const idx = AR_ALERTS.findIndex(a => a.id === 'a_demo');
+    if (idx > -1) AR_ALERTS.splice(idx, 1);
+    updateAlertBadge();
     render();
 
-    AR_toast('Demo reset. Ready to simulate again.', 'info', 'Demo Reset');
+    toast('Demo reset. Ready to simulate again.', 'info', 'Demo Reset');
   }
 
   // ── Simulated New Alert ────────────────────────────────
@@ -249,10 +249,10 @@ const AR_Alerts = (() => {
         status: 'active',
         actionTaken: false
       };
-      AR_DATA.alerts.push(newAlert);
-      AR_updateAlertBadge();
+      AR_ALERTS.push(newAlert);
+      updateAlertBadge();
       render();
-      AR_toast('New community report: Footpath obstruction on FC Road.', 'warning', 'New Report');
+      toast('New community report: Footpath obstruction on FC Road.', 'warning', 'New Report');
     }, 35000);
   }
 

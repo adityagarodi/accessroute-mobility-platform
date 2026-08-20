@@ -1,439 +1,179 @@
 /* ============================================================
-   AccessRoute – dashboard.js
-   Map initialisation, Chart.js charts, real-time simulation,
-   disruption detection, and automatic rerouting demo.
+   AccessRoute — dashboard.js
+   Map, charts, timeline, real-time simulation, rerouting
    ============================================================ */
-
 'use strict';
 
 const AR_Dashboard = (() => {
+  let map = null, mainLine = null, altLine = null, sensorMarkers = [];
+  let disruptionActive = false, rerouteComplete = false;
+  let simTick = 0;
 
-  // ── State ──────────────────────────────────────────────
-  let map = null;
-  let mainRouteLayer   = null;
-  let altRouteLayer    = null;
-  let markerLayers     = {};
-  let filterState      = { elevator: true, ramp: true };
-  let currentRoute     = AR_DATA.routes[0];
-  let reroutedRoute    = AR_DATA.routes[3];
-  let disruptionActive = false;
-  let rerouteComplete  = false;
-  let simInterval      = null;
+  // ── Nav inject ────────────────────────────────────────
+  if(typeof injectNav === 'function') injectNav('dashboard','Dashboard');
 
-  // ── Map ────────────────────────────────────────────────
+  // ── Map ───────────────────────────────────────────────
   function initMap() {
-    const mapEl = document.getElementById('main-map');
-    if (!mapEl) return;
-
-    map = L.map('main-map', {
-      center: [18.522, 73.862],
-      zoom: 14,
-      zoomControl: true
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-
-    drawMainRoute(currentRoute);
+    const el = document.getElementById('main-map'); if(!el) return;
+    map = L.map('main-map', { center:[18.522,73.862], zoom:14, zoomControl:true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+    drawRoute(AR_ROUTES[0]);
     drawAltRoute();
-    addFacilityMarkers();
-    addTransportMarkers();
+    drawSensors();
   }
 
-  function makeIcon(color, symbol) {
-    return L.divIcon({
-      className: '',
-      html: `<div style="
-        background:${color};color:white;width:32px;height:32px;
-        border-radius:50%;display:flex;align-items:center;justify-content:center;
-        font-size:14px;border:2.5px solid white;
-        box-shadow:0 2px 8px rgba(0,0,0,0.25);" aria-hidden="true">${symbol}</div>`,
-      iconSize: [32, 32],
-      iconAnchor: [16, 32]
-    });
-  }
-
-  function drawMainRoute(route) {
-    if (mainRouteLayer) map.removeLayer(mainRouteLayer);
-    const pts = route.waypoints.map(p => [p.lat, p.lng]);
-    mainRouteLayer = L.polyline(pts, {
-      color: '#0d9488', weight: 5, opacity: 0.9, lineCap: 'round'
-    }).addTo(map);
-
-    // Origin
-    L.marker([route.waypoints[0].lat, route.waypoints[0].lng], {
-      icon: makeIcon('#1e3a5f', '⊙')
-    }).addTo(map).bindPopup(`<strong>${route.origin}</strong><br>Current Location`);
-
-    // Destination
-    const last = route.waypoints[route.waypoints.length - 1];
-    L.marker([last.lat, last.lng], {
-      icon: makeIcon('#dc2626', '★')
-    }).addTo(map).bindPopup(`<strong>${route.destination}</strong><br>Destination`);
+  function drawRoute(r) {
+    if(mainLine) map.removeLayer(mainLine);
+    const pts = r.waypoints.map(p=>[p.lat,p.lng]);
+    mainLine = L.polyline(pts,{color:'#0d9488',weight:5,opacity:.9}).addTo(map);
+    L.marker([r.waypoints[0].lat,r.waypoints[0].lng],{icon:makeMapIcon('#1e3a5f','⊙')}).addTo(map).bindPopup(`<strong>${r.origin}</strong><br>Current Location`);
+    const last = r.waypoints[r.waypoints.length-1];
+    L.marker([last.lat,last.lng],{icon:makeMapIcon('#dc2626','★')}).addTo(map).bindPopup(`<strong>${r.destination}</strong>`);
   }
 
   function drawAltRoute() {
-    if (altRouteLayer) map.removeLayer(altRouteLayer);
-    const pts = AR_DATA.routes[2].waypoints.map(p => [p.lat, p.lng]);
-    altRouteLayer = L.polyline(pts, {
-      color: '#94a3b8', weight: 3, opacity: 0.6,
-      dashArray: '8 6'
-    }).addTo(map).bindPopup('Alternative route – Least Walking');
+    if(altLine) map.removeLayer(altLine);
+    const pts = AR_ROUTES[2].waypoints.map(p=>[p.lat,p.lng]);
+    altLine = L.polyline(pts,{color:'#94a3b8',weight:3,opacity:.5,dashArray:'8 5'}).addTo(map).bindPopup('Alternative – Least Walking');
   }
 
-  function addFacilityMarkers() {
-    const colors = {
-      elevator: '#2563eb',
-      ramp:     '#16a34a',
-      toilet:   '#7c3aed',
-      bus:      '#d97706',
-      crossing: '#0d9488',
-      footpath: '#c2410c'
-    };
-    const symbols = {
-      elevator: '▲', ramp: '↗', toilet: '⊕', bus: '⊡', crossing: '↔', footpath: '—'
-    };
-
-    markerLayers = {};
-    AR_DATA.facilities.forEach(f => {
-      const color = f.status === 'unavailable' ? '#dc2626'
-                  : f.status === 'limited'     ? '#d97706'
-                  : colors[f.type] || '#64748b';
-
-      const marker = L.marker([f.lat, f.lng], {
-        icon: makeIcon(color, symbols[f.type] || '●')
-      }).addTo(map).bindPopup(`
-        <strong>${f.name}</strong><br>
-        Status: <span style="color:${color};font-weight:600;">${f.status}</span><br>
-        ${f.verified ? '✓ Verified' : '◉ Community report'}<br>
-        <small style="color:#64748b;">Updated: ${new Date(f.lastUpdated).toLocaleTimeString()}</small>
-      `);
-
-      if (!markerLayers[f.type]) markerLayers[f.type] = [];
-      markerLayers[f.type].push(marker);
+  function drawSensors() {
+    sensorMarkers.forEach(m=>map.removeLayer(m)); sensorMarkers=[];
+    AR_SENSORS.forEach(s=>{
+      const color = !s.online?'#94a3b8':s.status==='obstacle'?'#dc2626':s.status==='warning'?'#d97706':'#2563eb';
+      const m = L.marker([s.lat,s.lng],{icon:makeMapIcon(color,'⚡')})
+        .addTo(map)
+        .bindPopup(`<strong>${s.deviceId}</strong><br>${s.facilityName}<br>Status: <strong style="color:${color}">${s.status.toUpperCase()}</strong><br>Reading: ${s.reading} ${s.unit}`);
+      sensorMarkers.push(m);
     });
   }
 
-  function addTransportMarkers() {
-    AR_DATA.mapMarkers.busStops.forEach(stop => {
-      L.marker([stop.lat, stop.lng], {
-        icon: makeIcon('#d97706', '⊡')
-      }).addTo(map).bindPopup(`<strong>${stop.label}</strong>`);
-    });
-  }
+  function centerMap() { map&&map.setView([18.5284,73.8742],15); }
 
-  function toggleMapFilter(type) {
-    if (!markerLayers[type]) return;
-    filterState[type] = !filterState[type];
-    markerLayers[type].forEach(m => {
-      filterState[type] ? m.addTo(map) : map.removeLayer(m);
-    });
-    const btnId = type === 'elevator' ? 'btn-filter-elevators' : 'btn-filter-ramps';
-    const btn = document.getElementById(btnId);
-    if (btn) btn.classList.toggle('btn-accent', filterState[type]);
-    AR_toast(`${type.charAt(0).toUpperCase()+type.slice(1)} markers ${filterState[type] ? 'shown' : 'hidden'}.`, 'info');
-  }
-
-  function centerMap() {
-    if (!map) return;
-    map.setView([18.5284, 73.8742], 15);
-    AR_toast('Map centred on your location.', 'info', 'Location');
-  }
-
-  // ── Charts ─────────────────────────────────────────────
+  // ── Charts ────────────────────────────────────────────
   function initCharts() {
-    const d = AR_DATA.charts;
-    const font = { family: 'Inter, sans-serif', size: 12 };
+    const d = AR_ANALYTICS, font={family:'Inter, sans-serif',size:11};
 
-    // 1. Facility Availability – stacked bar
-    new Chart(document.getElementById('chart-facilities'), {
-      type: 'bar',
-      data: {
-        labels: d.facilityAvailability.labels,
-        datasets: [
-          { label: 'Available', data: d.facilityAvailability.available, backgroundColor: '#16a34a', borderRadius: 4 },
-          { label: 'Limited',   data: d.facilityAvailability.limited,   backgroundColor: '#d97706', borderRadius: 4 },
-          { label: 'Unavailable', data: d.facilityAvailability.unavailable, backgroundColor: '#dc2626', borderRadius: 4 }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { position: 'top', labels: { font } } },
-        scales: {
-          x: { stacked: true, grid: { display: false }, ticks: { font } },
-          y: { stacked: true, beginAtZero: true, ticks: { font, stepSize: 2 }, grid: { color: '#e2e8f0' } }
-        }
-      }
+    new Chart(document.getElementById('chart-facilities'),{
+      type:'bar',
+      data:{labels:d.facilityAvailability.labels,datasets:[
+        {label:'Available',data:d.facilityAvailability.available,backgroundColor:'#16a34a',borderRadius:4},
+        {label:'Limited',  data:d.facilityAvailability.limited,  backgroundColor:'#d97706',borderRadius:4},
+        {label:'Unavailable',data:d.facilityAvailability.unavailable,backgroundColor:'#dc2626',borderRadius:4}
+      ]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font}}},
+        scales:{x:{stacked:true,grid:{display:false},ticks:{font}},y:{stacked:true,beginAtZero:true,ticks:{font},grid:{color:'#e2e8f0'}}}}
     });
 
-    // 2. Weekly Journeys – combo bar + line
-    new Chart(document.getElementById('chart-weekly'), {
-      type: 'bar',
-      data: {
-        labels: d.weeklyJourneys.labels,
-        datasets: [
-          {
-            label: 'Journeys', data: d.weeklyJourneys.journeys,
-            backgroundColor: 'rgba(30,58,95,0.15)', borderColor: '#1e3a5f',
-            borderWidth: 2, borderRadius: 6, yAxisID: 'y'
-          },
-          {
-            label: 'Avg Score %', data: d.weeklyJourneys.avgScore,
-            type: 'line', borderColor: '#0d9488', backgroundColor: 'rgba(13,148,136,0.1)',
-            borderWidth: 2.5, tension: 0.4, fill: true, pointRadius: 4,
-            pointBackgroundColor: '#0d9488', yAxisID: 'y2'
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { position: 'top', labels: { font } } },
-        scales: {
-          x: { grid: { display: false }, ticks: { font } },
-          y:  { position: 'left',  beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { font } },
-          y2: { position: 'right', min: 60, max: 100, grid: { display: false }, ticks: { font, callback: v => v + '%' } }
-        }
-      }
-    });
-
-    // 3. Journey Breakdown – doughnut
-    new Chart(document.getElementById('chart-breakdown'), {
-      type: 'doughnut',
-      data: {
-        labels: d.journeyBreakdown.labels,
-        datasets: [{ data: d.journeyBreakdown.values, backgroundColor: d.journeyBreakdown.colors, borderWidth: 2, borderColor: '#fff' }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: true,
-        cutout: '60%',
-        plugins: {
-          legend: { position: 'right', labels: { font, padding: 14 } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}%` } }
-        }
-      }
-    });
-
-    // 4. Accessibility Status – horizontal bar
-    new Chart(document.getElementById('chart-status'), {
-      type: 'bar',
-      data: {
-        labels: d.accessibilityStatus.labels,
-        datasets: [{
-          label: 'Availability %',
-          data: d.accessibilityStatus.values,
-          backgroundColor: d.accessibilityStatus.values.map(v => v >= 90 ? '#16a34a' : v >= 75 ? '#d97706' : '#dc2626'),
-          borderRadius: 6
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: true,
-        indexAxis: 'y',
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { beginAtZero: true, max: 100, grid: { color: '#e2e8f0' }, ticks: { font, callback: v => v + '%' } },
-          y: { grid: { display: false }, ticks: { font } }
-        }
-      }
+    new Chart(document.getElementById('chart-weekly'),{
+      type:'bar',
+      data:{labels:d.weeklyJourneys.labels,datasets:[
+        {label:'Journeys',data:d.weeklyJourneys.journeys,backgroundColor:'rgba(30,58,95,.15)',borderColor:'#1e3a5f',borderWidth:2,borderRadius:6,yAxisID:'y'},
+        {label:'Avg Score %',data:d.weeklyJourneys.scores,type:'line',borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,.1)',borderWidth:2.5,tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#0d9488',yAxisID:'y2'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font}}},
+        scales:{x:{grid:{display:false},ticks:{font}},y:{position:'left',beginAtZero:true,grid:{color:'#e2e8f0'},ticks:{font}},y2:{position:'right',min:60,max:100,grid:{display:false},ticks:{font,callback:v=>v+'%'}}}}
     });
   }
 
-  // ── Activity Timeline ──────────────────────────────────
-  function renderTimeline(items) {
-    const container = document.getElementById('activity-timeline');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const typeMap = {
-      success: { cls: 'success', icon: 'fa-circle-check' },
-      warning: { cls: 'warning', icon: 'fa-triangle-exclamation' },
-      info:    { cls: 'info',    icon: 'fa-rotate' },
-      danger:  { cls: 'danger',  icon: 'fa-circle-xmark' }
-    };
-
-    items.forEach(item => {
-      const t = typeMap[item.type] || typeMap.info;
-      const el = document.createElement('div');
-      el.className = 'timeline-item';
-      el.innerHTML = `
-        <div class="timeline-dot ${t.cls}" aria-hidden="true">
-          <i class="fa-solid ${t.icon}"></i>
-        </div>
-        <div class="timeline-content">
-          <div class="timeline-time">${item.time}</div>
-          <div class="timeline-message">${item.message}</div>
-        </div>
-      `;
-      container.appendChild(el);
-    });
+  // ── Timeline ──────────────────────────────────────────
+  function renderTimeline() {
+    const el = document.getElementById('timeline'); if(!el) return;
+    const typeMap={success:{cls:'tl-ok',icon:'fa-circle-check'},warning:{cls:'tl-warn',icon:'fa-triangle-exclamation'},danger:{cls:'tl-bad',icon:'fa-microchip'},info:{cls:'tl-info',icon:'fa-rotate'}};
+    el.innerHTML = AR_TIMELINE.map(item=>{
+      const t=typeMap[item.type]||typeMap.info;
+      return `<div class="tl-item"><div class="tl-dot ${t.cls}" aria-hidden="true"><i class="fa-solid ${t.icon}"></i></div><div><div class="tl-time">${item.time}</div><div class="tl-msg">${item.message}</div></div></div>`;
+    }).join('');
   }
 
-  // ── Rerouting Demo ─────────────────────────────────────
+  function addTimelineEvent(type,msg) {
+    const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    AR_TIMELINE.push({id:'tl_'+Date.now(),time:now,type,message:msg});
+    renderTimeline();
+  }
+
+  // ── Score Ring ────────────────────────────────────────
+  function animateRing(score) {
+    const fill=document.getElementById('score-ring'), num=document.getElementById('ring-num');
+    if(!fill||!num) return;
+    const c=2*Math.PI*35;
+    fill.style.strokeDasharray=c;
+    fill.style.strokeDashoffset=c-(score/100)*c;
+    num.textContent=score+'%';
+  }
+
+  // ── Rerouting ─────────────────────────────────────────
   function triggerDisruption() {
-    if (disruptionActive) return;
-    disruptionActive = true;
-
-    // Update facility status in data
-    const elev = getFacilityById('f002');
-    if (elev) elev.status = 'unavailable';
-
-    // Show disruption banner
-    const banner = document.getElementById('disruption-banner');
-    if (banner) banner.classList.add('visible');
-
-    // Toast + voice
-    AR_toast('Station Elevator #2 has become unavailable.', 'danger', 'Infrastructure Alert', 8000);
-    AR_speak('Warning. Elevator unavailable. Please recalculate your accessible route.');
-
-    // Update stat card
-    const disStat = document.getElementById('stat-disruptions');
-    const dissMeta = document.getElementById('stat-disruptions-meta');
-    if (disStat) disStat.textContent = '3';
-    if (dissMeta) dissMeta.textContent = '2 affecting your route';
-
-    // Add to timeline
-    const now = new Date();
-    AR_DATA.timeline.push({
-      id: 'tl_auto', time: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      icon: 'warning', type: 'warning', message: 'Elevator #2 unavailable – disruption detected'
-    });
-    renderTimeline(AR_DATA.timeline);
+    if(disruptionActive) return;
+    disruptionActive=true;
+    const sensor=AR_SENSORS.find(s=>s.id==='s003');
+    if(sensor){ sensor.status='obstacle'; sensor.reading=8; }
+    const fac=AR_FACILITIES.find(f=>f.id==='f003');
+    if(fac) fac.status='obstacle';
+    document.getElementById('disruption-banner').classList.add('show');
+    toast('ESP32-003 detected obstacle. Route affected.','danger','IoT Alert',8000);
+    speak('Warning. Obstacle detected on accessible pathway. Please recalculate your route.');
+    addTimelineEvent('danger','ESP32-003 detected obstacle on Platform Pathway (8cm clearance)');
+    addTimelineEvent('info','AI Route Engine analyzing alternative accessible routes…');
+    drawSensors();
+    document.getElementById('stat-alerts').textContent='4';
+    document.getElementById('stat-alerts-meta').textContent='2 affecting your route';
   }
 
-  function recalculateRoute() {
-    if (rerouteComplete) return;
-    rerouteComplete = true;
-
-    const banner = document.getElementById('disruption-banner');
-    const success = document.getElementById('reroute-success');
-
-    if (banner) banner.classList.remove('visible');
-
-    // Update route info on page
-    currentRoute = reroutedRoute;
-    document.getElementById('jc-eta')     && (document.getElementById('jc-eta').textContent     = '29');
-    document.getElementById('jc-score')   && (document.getElementById('jc-score').textContent   = '92%');
-    document.getElementById('route-eta')  && (document.getElementById('route-eta').textContent  = '29');
-    document.getElementById('stat-score') && (document.getElementById('stat-score').textContent = '92%');
-    document.getElementById('stat-journey-meta') && (document.getElementById('stat-journey-meta').textContent = 'ETA: 29 min · Step-free');
-
-    // Score ring
-    animateScoreRing(92);
-
-    // Elevator check becomes warning
-    const elevCheck = document.getElementById('elevator-check');
-    if (elevCheck) {
-      elevCheck.className = 'access-check-item no';
-      elevCheck.innerHTML = '<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> Elevator #2 unavailable – using ramp';
-    }
-
-    // Redraw map route
-    drawMainRoute(reroutedRoute);
-
-    // Show success banner
-    if (success) success.classList.add('visible');
-
-    // Toast + voice
-    AR_toast('Route recalculated. New accessible route found via North Exit ramp.', 'success', 'Route Recalculated', 6000);
-    AR_speak('Route recalculated. Alternative accessible route found. New estimated time: 29 minutes.');
-
-    // Timeline update
-    const now = new Date();
-    AR_DATA.timeline.push({
-      id: 'tl_reroute', time: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      icon: 'sync', type: 'info', message: 'Route recalculated – alternative accessible route via North Exit'
-    });
-    AR_DATA.timeline.push({
-      id: 'tl_confirm', time: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      icon: 'check', type: 'success', message: 'Accessible alternative confirmed – 92% accessibility score'
-    });
-    renderTimeline(AR_DATA.timeline);
-
-    // Reset disruptions stat
-    document.getElementById('stat-disruptions') && (document.getElementById('stat-disruptions').textContent = '2');
-    document.getElementById('stat-disruptions-meta') && (document.getElementById('stat-disruptions-meta').textContent = '0 affecting new route');
-    const badge = document.getElementById('stat-disruptions-badge');
-    if (badge) {
-      badge.className = 'stat-badge success';
-      badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Route clear';
-    }
+  function recalculate() {
+    if(rerouteComplete) return; rerouteComplete=true;
+    document.getElementById('disruption-banner').classList.remove('show');
+    const alt=AR_ROUTES[3];
+    document.getElementById('jc-eta').textContent='29';
+    document.getElementById('jc-score').textContent='92%';
+    document.getElementById('stat-score').textContent='92%';
+    document.getElementById('stat-eta').textContent='ETA: 29 min · Step-free';
+    animateRing(92);
+    drawRoute(alt);
+    document.getElementById('success-banner').classList.add('show');
+    toast('Route recalculated. Alternative accessible route found via North Exit Ramp.','success','Route Recalculated',6000);
+    speak('Route recalculated. Alternative accessible route found. New estimated time: 29 minutes.');
+    addTimelineEvent('success','AI Route Engine: alternative accessible route confirmed – 92%');
+    document.getElementById('stat-alerts').textContent='2';
+    document.getElementById('stat-alerts-meta').textContent='0 affecting new route';
+    const badge=document.getElementById('alerts-badge');
+    if(badge){badge.className='stat-badge sb-ok';badge.innerHTML='<i class="fa-solid fa-circle-check"></i> Route clear';}
   }
 
-  // ── Score Ring Animation ───────────────────────────────
-  function animateScoreRing(score) {
-    const fill   = document.getElementById('score-ring-fill');
-    const number = document.getElementById('score-ring-number');
-    if (!fill || !number) return;
-    const circumference = 2 * Math.PI * 35; // r=35
-    const offset = circumference - (score / 100) * circumference;
-    fill.style.strokeDasharray  = circumference;
-    fill.style.strokeDashoffset = offset;
-    number.textContent = score + '%';
+  // ── Data Flow Animation ───────────────────────────────
+  function animateDataFlow() {
+    const nodes=['df-iot','df-gw','df-data','df-fac','df-ai','df-score','df-route','df-user'];
+    let i=0;
+    setInterval(()=>{
+      nodes.forEach(n=>document.getElementById(n)&&document.getElementById(n).classList.remove('active'));
+      const el=document.getElementById(nodes[i%nodes.length]);
+      if(el) el.classList.add('active');
+      i++;
+    },900);
   }
 
-  // ── Simulated Real-time Updates ───────────────────────
-  function startRealTimeSimulation() {
-    let tick = 0;
-
-    simInterval = setInterval(() => {
-      tick++;
-
-      // After ~18 seconds, trigger the elevator disruption demo
-      if (tick === 3 && !disruptionActive) {
-        triggerDisruption();
-        return;
-      }
-
-      // Randomly update a non-critical facility every ~30s
-      if (tick % 5 === 0) {
-        const nonCritical = AR_DATA.facilities.filter(f => f.id !== 'f002');
-        const random = nonCritical[Math.floor(Math.random() * nonCritical.length)];
-        const statuses = ['available', 'available', 'available', 'limited'];
-        const prevStatus = random.status;
-        random.status = statuses[Math.floor(Math.random() * statuses.length)];
-        random.lastUpdated = new Date().toISOString();
-        if (prevStatus !== random.status) {
-          AR_toast(`${random.name} status updated to ${random.status}.`, 'info', 'Facility Update');
-        }
-      }
-
-      // Animate progress bar
-      const fill = document.getElementById('journey-progress-fill');
-      if (fill) {
-        const current = parseInt(fill.style.width) || 35;
-        const next = Math.min(current + 2, 95);
-        fill.style.width = next + '%';
-        const progressBar = fill.closest('[role="progressbar"]');
-        if (progressBar) progressBar.setAttribute('aria-valuenow', next);
-      }
-
-    }, 6000); // every 6s (3 ticks = ~18s for disruption)
-  }
-
-  // ── Greeting by time ──────────────────────────────────
-  function setGreeting() {
-    const hour = new Date().getHours();
-    const greeting = hour < 12 ? 'Good morning'
-                   : hour < 17 ? 'Good afternoon'
-                   : 'Good evening';
-    const el = document.getElementById('dashboard-greeting');
-    if (el) el.textContent = `${greeting}, ${AR_DATA.user.name} 👋`;
+  // ── Simulation ────────────────────────────────────────
+  function startSimulation() {
+    setInterval(()=>{
+      simTick++;
+      // trigger disruption after ~15s
+      if(simTick===3 && !disruptionActive) triggerDisruption();
+      // progress bar
+      const prog=document.getElementById('jc-prog');
+      if(prog){ const w=Math.min((parseInt(prog.style.width)||35)+2,95); prog.style.width=w+'%'; }
+    },5000);
   }
 
   // ── Init ──────────────────────────────────────────────
   function init() {
-    setGreeting();
     initMap();
     initCharts();
-    renderTimeline(AR_DATA.timeline);
-    animateScoreRing(94);
-    startRealTimeSimulation();
+    renderTimeline();
+    animateRing(94);
+    animateDataFlow();
+    startSimulation();
   }
 
   document.addEventListener('DOMContentLoaded', init);
-
-  // Public API
-  return { toggleMapFilter, centerMap, recalculateRoute, triggerDisruption };
-
+  return { centerMap, recalculate, triggerDisruption };
 })();

@@ -1,469 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AccessRoute Dashboard – Your personalized accessibility and mobility overview." />
-  <title>Dashboard – AccessRoute</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dashboard – AccessRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css?v=repair-1"/>
+<link rel="stylesheet" href="css/dashboard.css"/>
+<link rel="stylesheet" href="css/responsive.css"/>
 </head>
 <body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
-<div id="toast-container" aria-live="polite" aria-atomic="false"></div>
-<div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+<div id="page-root">
+<main id="main-content" class="page-body">
 
-<div class="app-shell">
-
-  <!-- ── Sidebar ── -->
-  <aside id="sidebar" class="sidebar" aria-label="Main navigation">
-    <div class="sidebar-logo">
-      <div class="logo-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
-      <div class="logo-text">
-        <span class="logo-name">AccessRoute</span>
-        <span class="logo-tagline">Everyone included.</span>
-      </div>
+  <!-- Header -->
+  <div class="page-header flex-bc" style="flex-wrap:wrap;gap:1rem;">
+    <div>
+      <h1 class="page-heading" id="greeting-text">Good morning, Aditya 👋</h1>
+      <p class="page-sub">Your personalized accessibility and mobility overview.</p>
     </div>
-
-    <nav class="sidebar-nav" aria-label="Site navigation">
-      <div class="nav-section-label">Main</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard.html" aria-label="Dashboard">
-        <span class="nav-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="dashboard">Dashboard</span>
-      </a>
-      <a href="routes.html" class="nav-item" data-page="routes.html" aria-label="Plan Route">
-        <span class="nav-icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="planRoute">Plan Route</span>
-      </a>
-      <a href="facilities.html" class="nav-item" data-page="facilities.html" aria-label="Facilities">
-        <span class="nav-icon"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="facilities">Facilities</span>
-      </a>
-      <a href="alerts.html" class="nav-item" data-page="alerts.html" aria-label="Live Alerts">
-        <span class="nav-icon"><i class="fa-solid fa-bell" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="liveAlerts">Live Alerts</span>
-        <span class="nav-badge alert-count" aria-label="active alerts">2</span>
-      </a>
-
-      <div class="nav-section-label">Personal</div>
-      <a href="profile.html" class="nav-item" data-page="profile.html" aria-label="Accessibility Profile">
-        <span class="nav-icon"><i class="fa-solid fa-user-gear" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="profile">Accessibility Profile</span>
-      </a>
-      <a href="settings.html" class="nav-item" data-page="settings.html" aria-label="Settings">
-        <span class="nav-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="settings">Settings</span>
-      </a>
-
-      <div class="nav-section-label">Support</div>
-      <a href="#" class="nav-item" aria-label="Help and Support" onclick="AR_toast('Help centre coming soon.','info','Help');return false;">
-        <span class="nav-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="helpSupport">Help &amp; Support</span>
-      </a>
-      <a href="#" class="nav-item" aria-label="Trusted Contact" onclick="AR_toast('Opening trusted contact…','info','Trusted Contact');return false;">
-        <span class="nav-icon"><i class="fa-solid fa-heart" aria-hidden="true"></i></span>
-        <span class="nav-label" data-i18n="trustedContact">Trusted Contact</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-bottom">
-      <div class="sidebar-user" role="button" tabindex="0" aria-label="User profile" onclick="window.location='profile.html'">
-        <div class="user-avatar" aria-hidden="true">A</div>
-        <div class="user-info">
-          <div class="user-name">Aditya</div>
-          <div class="user-role">Accessibility User</div>
-        </div>
-      </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+      <button class="btn btn-outline btn-sm" onclick="location.reload()" aria-label="Refresh dashboard"><i class="fa-solid fa-rotate"></i> Refresh</button>
+      <a href="routes.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-route"></i> Plan Route</a>
     </div>
-  </aside>
-
-  <!-- ── Main ── -->
-  <div class="main-content">
-
-    <!-- Topbar -->
-    <header class="topbar" role="banner">
-      <div class="topbar-left">
-        <button id="hamburger-btn" class="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
-          <i class="fa-solid fa-bars" aria-hidden="true"></i>
-        </button>
-        <div>
-          <div class="topbar-title">Dashboard</div>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <button id="voice-toggle-btn" class="icon-btn" title="Toggle voice guidance" aria-pressed="false" aria-label="Toggle voice guidance">
-          <i class="fa-solid fa-volume-xmark" aria-hidden="true"></i>
-        </button>
-        <a href="alerts.html" class="icon-btn" aria-label="View live alerts">
-          <i class="fa-solid fa-bell" aria-hidden="true"></i>
-          <span class="badge-dot notif-badge-dot" aria-hidden="true"></span>
-        </a>
-        <a href="settings.html" class="icon-btn" aria-label="Open settings">
-          <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-        </a>
-        <a href="profile.html" class="icon-btn" aria-label="Open profile">
-          <div class="user-avatar" style="width:32px;height:32px;font-size:0.8rem;" aria-hidden="true">A</div>
-        </a>
-      </div>
-    </header>
-
-    <!-- Page Body -->
-    <main id="main-content" class="page-body">
-
-      <!-- Page Header -->
-      <div class="page-header flex-between" style="flex-wrap:wrap;gap:1rem;">
-        <div>
-          <h1 class="page-heading" id="dashboard-greeting">Good morning, Aditya 👋</h1>
-          <p class="page-subheading" data-i18n="yourOverview">Your personalized accessibility and mobility overview</p>
-        </div>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-          <button class="btn btn-outline btn-sm" onclick="AR_speak('Refreshing dashboard data.');AR_toast('Dashboard refreshed.','success','Refresh');" aria-label="Refresh dashboard">
-            <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh
-          </button>
-          <a href="routes.html" class="btn btn-accent btn-sm">
-            <i class="fa-solid fa-route" aria-hidden="true"></i> Plan Route
-          </a>
-        </div>
-      </div>
-
-      <!-- Disruption Banner -->
-      <div id="disruption-banner" class="disruption-banner" role="alert" aria-live="assertive">
-        <i class="fa-solid fa-triangle-exclamation banner-icon" aria-hidden="true"></i>
-        <div class="banner-body">
-          <div class="banner-title">Route Disruption Detected</div>
-          <div class="banner-message" id="banner-message">Station Elevator #2 has become unavailable. Your current accessible route is affected.</div>
-          <div class="banner-actions">
-            <button class="btn btn-danger btn-sm" id="btn-recalculate" onclick="AR_Dashboard.recalculateRoute()">
-              <i class="fa-solid fa-rotate" aria-hidden="true"></i> Recalculate Route
-            </button>
-            <a href="alerts.html" class="btn btn-outline btn-sm">View Alerts</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Reroute Success -->
-      <div id="reroute-success" class="reroute-success" role="status" aria-live="polite">
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-          <i class="fa-solid fa-circle-check" style="font-size:1.8rem;color:var(--color-success);" aria-hidden="true"></i>
-          <div style="flex:1;">
-            <div style="font-size:1rem;font-weight:700;color:var(--color-success);margin-bottom:0.25rem;">Alternative accessible route found.</div>
-            <div style="font-size:0.875rem;color:var(--color-text);">
-              Previous ETA: <strong id="prev-eta">24 min</strong> &rarr; New ETA: <strong id="new-eta">29 min</strong> &nbsp;|&nbsp;
-              Accessibility: <strong id="prev-score">94%</strong> &rarr; <strong id="new-score">92%</strong>
-            </div>
-          </div>
-          <a href="routes.html" class="btn btn-success btn-sm">Start Journey</a>
-        </div>
-      </div>
-
-      <!-- ── Summary Cards ── -->
-      <div class="summary-grid" role="list" aria-label="Summary statistics">
-
-        <div class="stat-card" role="listitem">
-          <div class="stat-icon navy" aria-hidden="true"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
-          <div class="stat-body">
-            <div class="stat-label" data-i18n="activeJourney">Active Journey</div>
-            <div class="stat-value" id="stat-journey">Pune Stn → College</div>
-            <div class="stat-meta" id="stat-journey-meta">ETA: 28 min · Step-free</div>
-            <span class="stat-badge success"><i class="fa-solid fa-circle-check"></i> On Track</span>
-          </div>
-        </div>
-
-        <div class="stat-card" role="listitem">
-          <div class="stat-icon teal" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
-          <div class="stat-body">
-            <div class="stat-label" data-i18n="accessScore">Accessibility Score</div>
-            <div class="stat-value" id="stat-score">94%</div>
-            <div class="stat-meta">Excellent</div>
-            <span class="stat-badge success"><i class="fa-solid fa-arrow-trend-up"></i> +2% this week</span>
-          </div>
-        </div>
-
-        <div class="stat-card" role="listitem">
-          <div class="stat-icon green" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></div>
-          <div class="stat-body">
-            <div class="stat-label" data-i18n="nearbyFacilities">Nearby Facilities</div>
-            <div class="stat-value">12</div>
-            <div class="stat-meta">9 verified</div>
-            <span class="stat-badge info"><i class="fa-solid fa-map-pin"></i> Within 1km</span>
-          </div>
-        </div>
-
-        <div class="stat-card" role="listitem">
-          <div class="stat-icon amber" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></div>
-          <div class="stat-body">
-            <div class="stat-label" data-i18n="activeDisruptions">Active Disruptions</div>
-            <div class="stat-value" id="stat-disruptions">2</div>
-            <div class="stat-meta" id="stat-disruptions-meta">1 affecting your route</div>
-            <span class="stat-badge warning" id="stat-disruptions-badge">
-              <i class="fa-solid fa-exclamation"></i> Action needed
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Dashboard Layout ── -->
-      <div class="dashboard-layout">
-
-        <!-- Main Column -->
-        <div class="dashboard-main">
-
-          <!-- Map Section -->
-          <section class="map-section card" aria-labelledby="map-heading" style="padding:0;overflow:hidden;">
-            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--color-border);">
-              <div class="map-header">
-                <h2 class="map-title" id="map-heading"><i class="fa-solid fa-map-location-dot" style="color:var(--color-accent);" aria-hidden="true"></i> Live Accessible Map</h2>
-                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                  <button class="btn btn-outline btn-sm" id="btn-filter-elevators" onclick="AR_Dashboard.toggleMapFilter('elevator')">
-                    <i class="fa-solid fa-elevator" aria-hidden="true"></i> Elevators
-                  </button>
-                  <button class="btn btn-outline btn-sm" id="btn-filter-ramps" onclick="AR_Dashboard.toggleMapFilter('ramp')">
-                    <i class="fa-solid fa-road" aria-hidden="true"></i> Ramps
-                  </button>
-                  <button class="btn btn-outline btn-sm" onclick="AR_Dashboard.centerMap()">
-                    <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> My Location
-                  </button>
-                  <a href="routes.html" class="btn btn-accent btn-sm">
-                    <i class="fa-solid fa-route" aria-hidden="true"></i> Route Alternatives
-                  </a>
-                </div>
-              </div>
-              <div class="map-legend" aria-label="Map legend">
-                <span class="legend-item"><span class="legend-dot" style="background:#1e3a5f;"></span> Current location</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#dc2626;"></span> Destination</span>
-                <span class="legend-line" style="background:#0d9488;"></span><span style="font-size:0.75rem;color:var(--color-text-muted);">Main route</span>
-                <span class="legend-line" style="background:#94a3b8;border:1px dashed #94a3b8;"></span><span style="font-size:0.75rem;color:var(--color-text-muted);">Alt route</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#2563eb;"></span> Elevator</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Ramp/Stop</span>
-              </div>
-            </div>
-            <div class="map-wrapper" style="border-radius:0;">
-              <div id="main-map" role="application" aria-label="Accessible route map"></div>
-            </div>
-          </section>
-
-          <!-- Route Summary -->
-          <section class="route-summary-panel mt-6" aria-labelledby="route-summary-heading">
-            <div class="flex-between mb-4">
-              <h2 style="font-size:1rem;font-weight:700;color:var(--color-text);" id="route-summary-heading">
-                <i class="fa-solid fa-route" style="color:var(--color-accent);" aria-hidden="true"></i> Accessible Route
-              </h2>
-              <a href="routes.html" class="btn btn-outline btn-sm">Change Route</a>
-            </div>
-
-            <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.25rem;">
-              <div><span style="font-size:1.5rem;font-weight:700;color:var(--color-primary);" id="route-eta">28</span><span style="font-size:0.8rem;color:var(--color-text-muted);"> min total</span></div>
-              <div class="route-steps-list" role="list" style="flex:1;min-width:200px;">
-                <div class="route-step-item" role="listitem">
-                  <div class="route-step-icon walk" aria-hidden="true"><i class="fa-solid fa-person-walking"></i></div>
-                  <div>
-                    <div class="route-step-label">Walking</div>
-                    <div class="route-step-sub">400m · Station to Bus Stop</div>
-                  </div>
-                  <div class="route-step-time">5 min</div>
-                </div>
-                <div class="route-step-item" role="listitem">
-                  <div class="route-step-icon bus" aria-hidden="true"><i class="fa-solid fa-bus"></i></div>
-                  <div>
-                    <div class="route-step-label">Bus 15 (Low-floor)</div>
-                    <div class="route-step-sub">Pune Stn → FC Road</div>
-                  </div>
-                  <div class="route-step-time">14 min</div>
-                </div>
-                <div class="route-step-item" role="listitem">
-                  <div class="route-step-icon walk" aria-hidden="true"><i class="fa-solid fa-person-walking"></i></div>
-                  <div>
-                    <div class="route-step-label">Walking</div>
-                    <div class="route-step-sub">FC Road to College</div>
-                  </div>
-                  <div class="route-step-time">9 min</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-            <div style="font-size:0.8rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;">Accessibility Features</div>
-            <div class="accessibility-check-list" role="list" aria-label="Accessibility features of this route">
-              <div class="access-check-item yes" role="listitem"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Step-free route</div>
-              <div class="access-check-item yes" role="listitem"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Low-floor transport</div>
-              <div class="access-check-item yes" role="listitem"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Accessible station</div>
-              <div class="access-check-item yes" id="elevator-check" role="listitem"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Elevator available</div>
-              <div class="access-check-item yes" role="listitem"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Ramp at terminus</div>
-            </div>
-            <div class="mt-4">
-              <button class="btn btn-accent btn-block" onclick="AR_speak('Starting journey to Fergusson College. Continue straight for 200 meters to reach Bus Stop A.');AR_toast('Journey started. Voice guidance active.','success','Journey Started');">
-                <i class="fa-solid fa-play" aria-hidden="true"></i> Start Journey
-              </button>
-            </div>
-          </section>
-
-          <!-- Charts -->
-          <section aria-labelledby="charts-heading" class="mt-6">
-            <h2 class="section-title" id="charts-heading"><i class="fa-solid fa-chart-bar" aria-hidden="true"></i> Accessibility Analytics</h2>
-            <div class="charts-grid">
-              <div class="chart-card">
-                <div class="chart-title">Facility Availability</div>
-                <div class="chart-subtitle">Current status breakdown by type</div>
-                <div class="chart-container"><canvas id="chart-facilities" height="220" aria-label="Facility availability chart" role="img"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Weekly Accessible Journeys</div>
-                <div class="chart-subtitle">Journeys &amp; avg accessibility score</div>
-                <div class="chart-container"><canvas id="chart-weekly" height="220" aria-label="Weekly journeys chart" role="img"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Journey Time Breakdown</div>
-                <div class="chart-subtitle">Average time by travel mode</div>
-                <div class="chart-container"><canvas id="chart-breakdown" height="220" aria-label="Journey time breakdown chart" role="img"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Accessibility Status</div>
-                <div class="chart-subtitle">Availability of key features</div>
-                <div class="chart-container"><canvas id="chart-status" height="220" aria-label="Accessibility status chart" role="img"></canvas></div>
-              </div>
-            </div>
-          </section>
-
-        </div><!-- /dashboard-main -->
-
-        <!-- Side Column -->
-        <aside class="dashboard-side" aria-label="Dashboard widgets">
-
-          <!-- Journey Card -->
-          <div class="journey-card" role="region" aria-label="Active journey details">
-            <div class="journey-header">
-              <div>
-                <div class="journey-label">Active Journey</div>
-                <div class="journey-route" id="jc-route">Pune Station → Fergusson College</div>
-              </div>
-              <span class="journey-badge" id="jc-badge">Step-free</span>
-            </div>
-            <div class="journey-steps">
-              <div class="journey-step">
-                <div class="step-val" id="jc-eta">28</div>
-                <div class="step-label">min ETA</div>
-              </div>
-              <div class="journey-step">
-                <div class="step-val">1</div>
-                <div class="step-label">Transfer</div>
-              </div>
-              <div class="journey-step">
-                <div class="step-val" id="jc-score">94%</div>
-                <div class="step-label">Accessible</div>
-              </div>
-            </div>
-            <div class="journey-progress" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Journey progress">
-              <div class="journey-progress-fill" id="journey-progress-fill" style="width:35%;"></div>
-            </div>
-            <div class="journey-footer">
-              <span class="access-feature"><i class="fa-solid fa-elevator" aria-hidden="true"></i> Elevator</span>
-              <span class="access-feature"><i class="fa-solid fa-bus" aria-hidden="true"></i> Low-floor</span>
-              <span class="access-feature"><i class="fa-solid fa-road" aria-hidden="true"></i> Ramp</span>
-            </div>
-          </div>
-
-          <!-- Accessibility Score -->
-          <div class="card" role="region" aria-label="Accessibility score">
-            <div class="card-header">
-              <span class="card-title">Accessibility Score</span>
-              <span class="badge badge-verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Excellent</span>
-            </div>
-            <div class="score-ring-wrapper">
-              <div class="score-ring" aria-hidden="true">
-                <svg viewBox="0 0 80 80" width="80" height="80">
-                  <circle class="ring-bg" cx="40" cy="40" r="35"/>
-                  <circle class="ring-fill" id="score-ring-fill" cx="40" cy="40" r="35"/>
-                </svg>
-                <div class="ring-number" id="score-ring-number" aria-label="Score 94%">94%</div>
-              </div>
-              <div>
-                <div style="font-size:0.875rem;color:var(--color-text-muted);margin-bottom:0.5rem;">Route accessibility</div>
-                <div style="display:flex;flex-direction:column;gap:0.4rem;">
-                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;">
-                    <div class="score-bar"><div class="score-bar-fill high" style="width:98%"></div></div>
-                    <span style="color:var(--color-text-muted);width:60px;">Step-free 98%</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;">
-                    <div class="score-bar"><div class="score-bar-fill high" style="width:82%"></div></div>
-                    <span style="color:var(--color-text-muted);width:60px;">Elevators 82%</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;">
-                    <div class="score-bar"><div class="score-bar-fill high" style="width:91%"></div></div>
-                    <span style="color:var(--color-text-muted);width:60px;">Low-floor 91%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Trusted Contact -->
-          <div class="trusted-card" role="region" aria-label="Trusted contact">
-            <div class="tc-label">Trusted Contact</div>
-            <div class="tc-name">Priya Sharma</div>
-            <div class="tc-relation">Sister · Emergency Contact</div>
-            <div class="tc-actions">
-              <button class="tc-btn" data-action="share-journey" aria-label="Share current journey with trusted contact">
-                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share Journey
-              </button>
-              <button class="tc-btn" data-action="share-location" aria-label="Share current location with trusted contact">
-                <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Share Location
-              </button>
-              <button class="tc-btn" data-action="send-alert" aria-label="Send emergency alert to trusted contact">
-                <i class="fa-solid fa-bell" aria-hidden="true"></i> Send Alert
-              </button>
-            </div>
-          </div>
-
-          <!-- Activity Timeline -->
-          <div class="card" role="region" aria-labelledby="timeline-heading">
-            <div class="card-header">
-              <h2 class="card-title" id="timeline-heading">Activity Timeline</h2>
-              <span class="text-xs text-muted">Today</span>
-            </div>
-            <div class="timeline" id="activity-timeline" aria-label="Recent activity timeline" role="log" aria-live="polite">
-              <!-- Populated by dashboard.js -->
-            </div>
-          </div>
-
-        </aside>
-      </div><!-- /dashboard-layout -->
-
-    </main><!-- /page-body -->
-  </div><!-- /main-content -->
-</div><!-- /app-shell -->
-
-<!-- Bottom Nav (mobile) -->
-<nav class="bottom-nav" aria-label="Mobile navigation">
-  <div class="bottom-nav-items">
-    <a href="dashboard.html" class="bottom-nav-item active" data-page="dashboard.html" aria-current="page">
-      <i class="fa-solid fa-gauge-high" aria-hidden="true"></i><span>Dashboard</span>
-    </a>
-    <a href="routes.html" class="bottom-nav-item" data-page="routes.html">
-      <i class="fa-solid fa-route" aria-hidden="true"></i><span>Routes</span>
-    </a>
-    <a href="facilities.html" class="bottom-nav-item" data-page="facilities.html">
-      <i class="fa-solid fa-building" aria-hidden="true"></i><span>Facilities</span>
-    </a>
-    <a href="alerts.html" class="bottom-nav-item" data-page="alerts.html">
-      <i class="fa-solid fa-bell" aria-hidden="true"></i><span>Alerts</span>
-    </a>
-    <a href="profile.html" class="bottom-nav-item" data-page="profile.html">
-      <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Profile</span>
-    </a>
   </div>
-</nav>
 
-<!-- Scripts -->
+  <!-- Disruption Banner -->
+  <div id="disruption-banner" class="disruption-banner" role="alert" aria-live="assertive">
+    <i class="fa-solid fa-triangle-exclamation" style="font-size:1.6rem;color:var(--danger);flex-shrink:0;margin-top:2px;"></i>
+    <div style="flex:1;">
+      <div style="font-size:1.1rem;font-weight:700;color:var(--danger);margin-bottom:.25rem;">Route Disruption Detected</div>
+      <div id="banner-msg" style="font-size:.875rem;color:var(--text);margin-bottom:.75rem;">ESP32-003 detected an obstacle on Platform Pathway. Your current accessible route is affected.</div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn btn-danger btn-sm" onclick="AR_Dashboard.recalculate()"><i class="fa-solid fa-rotate"></i> Recalculate Route</button>
+        <a href="alerts.html" class="btn btn-outline btn-sm">View Alerts</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Banner -->
+  <div id="success-banner" class="success-banner" role="status" aria-live="polite">
+    <i class="fa-solid fa-circle-check" style="font-size:1.6rem;color:var(--success);flex-shrink:0;margin-top:2px;"></i>
+    <div style="flex:1;">
+      <div style="font-size:1.1rem;font-weight:700;color:var(--success);margin-bottom:.25rem;">Alternative accessible route found.</div>
+      <div style="font-size:.875rem;color:var(--text);">Previous ETA: <strong id="prev-eta">24 min</strong> → New ETA: <strong id="new-eta">29 min</strong> &nbsp;|&nbsp; Score: <strong id="prev-score">94%</strong> → <strong id="new-score">92%</strong></div>
+    </div>
+    <a href="routes.html" class="btn btn-success btn-sm" style="flex-shrink:0;">Start Journey</a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="sum-grid-6" role="list" aria-label="Summary statistics">
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-navy"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+      <div>
+        <div class="stat-label">Active Journey</div>
+        <div class="stat-value" id="stat-journey">Pune Stn → College</div>
+        <div class="stat-meta" id="stat-eta">ETA: 28 min · Step-free</div>
+        <span class="stat-badge sb-ok"><i class="fa-solid fa-circle-check"></i> On Track</span>
+      </div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-teal"><i class="fa-solid fa-star"></i></div>
+      <div>
+        <div class="stat-label">Accessibility Score</div>
+        <div class="stat-value" id="stat-score">94%</div>
+        <div class="stat-meta">Excellent</div>
+        <span class="stat-badge sb-ok"><i class="fa-solid fa-arrow-trend-up"></i> +2% this week</span>
+      </div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-blue"><i class="fa-solid fa-microchip"></i></div>
+      <div>
+        <div class="stat-label">Connected IoT</div>
+        <div class="stat-value">18</div>
+        <div class="stat-meta">16 online · 2 offline</div>
+        <span class="stat-badge sb-info"><i class="fa-solid fa-satellite-dish"></i> Live data</span>
+      </div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div>
+        <div class="stat-label">Active Alerts</div>
+        <div class="stat-value" id="stat-alerts">3</div>
+        <div class="stat-meta" id="stat-alerts-meta">1 affecting your route</div>
+        <span class="stat-badge sb-warn" id="alerts-badge"><i class="fa-solid fa-exclamation"></i> Action needed</span>
+      </div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-green"><i class="fa-solid fa-location-dot"></i></div>
+      <div>
+        <div class="stat-label">Accessible Facilities</div>
+        <div class="stat-value">24</div>
+        <div class="stat-meta">18 IoT-verified</div>
+        <span class="stat-badge sb-ok"><i class="fa-solid fa-shield-check"></i> Monitored</span>
+      </div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon si-red"><i class="fa-solid fa-wifi"></i></div>
+      <div>
+        <div class="stat-label">Offline Sensors</div>
+        <div class="stat-value">2</div>
+        <div class="stat-meta">Battery depleted</div>
+        <span class="stat-badge sb-bad"><i class="fa-solid fa-battery-empty"></i> Needs attention</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="dash-layout">
+    <div class="dash-main">
+
+      <!-- Map -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+          <div><span style="font-size:1rem;font-weight:700;color:var(--text);"><i class="fa-solid fa-map-location-dot" style="color:var(--teal);margin-right:.4rem;"></i>Live Accessibility Map</span></div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="AR_Dashboard.centerMap()"><i class="fa-solid fa-location-crosshairs"></i> My Location</button>
+            <a href="map.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-expand"></i> Full Map</a>
+          </div>
+        </div>
+        <div style="height:380px;" id="main-map" role="application" aria-label="Accessible route map"></div>
+        <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1.25rem;flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-m);"><span style="width:10px;height:10px;border-radius:50%;background:#1e3a5f;display:inline-block;"></span> Current</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-m);"><span style="width:10px;height:10px;border-radius:50%;background:#dc2626;display:inline-block;"></span> Destination</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-m);"><span style="width:20px;height:3px;background:#0d9488;display:inline-block;border-radius:2px;"></span> Main Route</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-m);"><span style="width:10px;height:10px;border-radius:50%;background:#2563eb;display:inline-block;"></span> IoT Sensor</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-m);"><span style="width:10px;height:10px;border-radius:50%;background:#dc2626;display:inline-block;"></span> Obstacle</span>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><i class="fa-solid fa-satellite-dish" style="color:var(--teal);margin-right:.4rem;"></i>Real-Time System Status</span>
+          <span class="sp sp-ok"><span class="status-dot sd-ok"></span> All Systems Operational</span>
+        </div>
+        <div class="sys-grid">
+          <div class="sys-item"><div class="sys-icon syi-iot"><i class="fa-solid fa-microchip"></i></div><div><div class="sys-label">IoT Network</div><div class="sys-value" style="color:var(--success);">ONLINE</div></div></div>
+          <div class="sys-item"><div class="sys-icon syi-gps"><i class="fa-solid fa-location-crosshairs"></i></div><div><div class="sys-label">GPS</div><div class="sys-value" style="color:var(--success);">CONNECTED</div></div></div>
+          <div class="sys-item"><div class="sys-icon syi-trans"><i class="fa-solid fa-bus"></i></div><div><div class="sys-label">Transport API</div><div class="sys-value" style="color:var(--success);">CONNECTED</div></div></div>
+          <div class="sys-item"><div class="sys-icon syi-map"><i class="fa-solid fa-map"></i></div><div><div class="sys-label">Map Services</div><div class="sys-value" style="color:var(--success);">ONLINE</div></div></div>
+          <div class="sys-item"><div class="sys-icon syi-ai"><i class="fa-solid fa-brain"></i></div><div><div class="sys-label">AI Route Engine</div><div class="sys-value" style="color:var(--success);">ACTIVE</div></div></div>
+          <div class="sys-item"><div class="sys-icon syi-alert"><i class="fa-solid fa-bell"></i></div><div><div class="sys-label">Alert System</div><div class="sys-value" style="color:var(--success);">MONITORING</div></div></div>
+        </div>
+      </div>
+
+      <!-- Data Flow -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><i class="fa-solid fa-diagram-project" style="color:var(--teal);margin-right:.4rem;"></i>Real-Time Accessibility Intelligence</span>
+          <span class="badge badge-iot"><i class="fa-solid fa-circle" style="font-size:8px;animation:pulse-d 2s infinite;"></i> Live</span>
+        </div>
+        <div id="df-flow" style="display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:0;padding:.5rem 0;">
+          <div class="df-node" id="df-iot"><i class="fa-solid fa-microchip" style="color:var(--info);"></i><span class="dn-l">IoT Sensors</span><span class="dn-s">ESP32</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-gw"><i class="fa-solid fa-satellite-dish" style="color:var(--teal);"></i><span class="dn-l">ESP32 GW</span><span class="dn-s">Gateway</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-data"><i class="fa-solid fa-database" style="color:var(--navy);"></i><span class="dn-l">Real-Time</span><span class="dn-s">Data</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-fac"><i class="fa-solid fa-building" style="color:var(--warning);"></i><span class="dn-l">Facility</span><span class="dn-s">Status</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-ai"><i class="fa-solid fa-brain" style="color:var(--purple);"></i><span class="dn-l">AI Engine</span><span class="dn-s">Prototype</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-score"><i class="fa-solid fa-star" style="color:var(--teal);"></i><span class="dn-l">A11y Score</span><span class="dn-s">94%</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-route"><i class="fa-solid fa-route" style="color:var(--success);"></i><span class="dn-l">Smart Route</span><span class="dn-s">Rerouting</span></div>
+          <span class="df-arr">→</span>
+          <div class="df-node" id="df-user"><i class="fa-solid fa-person-walking" style="color:var(--danger);"></i><span class="dn-l">User</span><span class="dn-s">Guidance</span></div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card"><div class="chart-title">Facility Availability</div><div class="chart-sub">Status breakdown by type</div><canvas id="chart-facilities" height="220" aria-label="Facility availability chart"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Weekly Accessible Journeys</div><div class="chart-sub">Journey count & avg accessibility score</div><canvas id="chart-weekly" height="220" aria-label="Weekly journeys chart"></canvas></div>
+      </div>
+
+    </div><!-- /dash-main -->
+
+    <!-- Sidebar -->
+    <div class="dash-side">
+
+      <!-- Journey Card -->
+      <div class="journey-card" role="region" aria-label="Active journey">
+        <div class="jc-label">Active Journey</div>
+        <div class="jc-route" id="jc-route">Pune Station → Fergusson College</div>
+        <div class="jc-stats">
+          <div><div class="jcs-val" id="jc-eta">28</div><div class="jcs-lbl">min ETA</div></div>
+          <div><div class="jcs-val">1</div><div class="jcs-lbl">Transfer</div></div>
+          <div><div class="jcs-val" id="jc-score">94%</div><div class="jcs-lbl">Accessible</div></div>
+        </div>
+        <div class="jc-prog" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">
+          <div class="jc-prog-fill" id="jc-prog" style="width:35%;"></div>
+        </div>
+        <div class="jc-feats">
+          <span class="jc-feat"><i class="fa-solid fa-elevator"></i> Elevator</span>
+          <span class="jc-feat"><i class="fa-solid fa-bus"></i> Low-floor</span>
+          <span class="jc-feat"><i class="fa-solid fa-road"></i> Ramp</span>
+        </div>
+        <div style="margin-top:1rem;">
+          <button class="btn btn-white btn-block btn-sm" onclick="toast('Journey started. Voice guidance active.','success','Journey Started');speak('Starting journey to Fergusson College.');" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.4);color:#fff;">
+            <i class="fa-solid fa-play"></i> Start Journey
+          </button>
+        </div>
+      </div>
+
+      <!-- Score Ring -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Accessibility Score</span><span class="badge badge-verified"><i class="fa-solid fa-circle-check"></i> Excellent</span></div>
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+          <div class="ring-wrap" aria-hidden="true">
+            <svg viewBox="0 0 80 80" width="80" height="80">
+              <circle class="ring-bg" cx="40" cy="40" r="35"/>
+              <circle class="ring-fill" id="score-ring" cx="40" cy="40" r="35"/>
+            </svg>
+            <div class="ring-num" id="ring-num">94%</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:.4rem;">
+            <div style="font-size:.75rem;color:var(--text-m);margin-bottom:.25rem;">Route breakdown</div>
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.7rem;"><div class="score-bar"><div class="score-fill sf-high" style="width:98%;"></div></div><span style="color:var(--text-m);white-space:nowrap;">Step-free 98%</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.7rem;"><div class="score-bar"><div class="score-fill sf-high" style="width:82%;"></div></div><span style="color:var(--text-m);white-space:nowrap;">Elevator 82%</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.7rem;"><div class="score-bar"><div class="score-fill sf-high" style="width:91%;"></div></div><span style="color:var(--text-m);white-space:nowrap;">Low-floor 91%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trusted Contact -->
+      <div class="tc-card" role="region" aria-label="Trusted contact">
+        <div class="tc-lbl">Trusted Contact</div>
+        <div class="tc-name">Priya Sharma</div>
+        <div class="tc-rel">Sister · Emergency Contact</div>
+        <div class="tc-actions">
+          <button class="tc-btn" data-action="share-journey"><i class="fa-solid fa-share-nodes"></i> Share Journey</button>
+          <button class="tc-btn" data-action="share-location"><i class="fa-solid fa-location-dot"></i> Share Location</button>
+          <button class="tc-btn" data-action="send-alert"><i class="fa-solid fa-bell"></i> Send Alert</button>
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Activity Timeline</span><span style="font-size:.75rem;color:var(--text-m);">Today</span></div>
+        <div class="timeline" id="timeline" role="log" aria-live="polite" aria-label="Recent activity"></div>
+      </div>
+
+    </div><!-- /dash-side -->
+  </div><!-- /dash-layout -->
+
+</main>
+</div><!-- /page-root -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/data.js"></script>
-<script src="js/app.js"></script>
+<script src="js/nav.js?v=repair-1"></script>
+<script src="js/app.js?v=repair-1"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

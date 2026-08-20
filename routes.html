@@ -1,194 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Plan an accessible route with AccessRoute – compare options by accessibility score, ETA, and walking distance." />
-  <title>Plan Route – AccessRoute</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Plan Route – AccessRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css?v=repair-1"/>
+<link rel="stylesheet" href="css/dashboard.css"/>
+<link rel="stylesheet" href="css/responsive.css"/>
 </head>
 <body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
-<div id="toast-container" aria-live="polite" aria-atomic="false"></div>
-<div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
-
-<div class="app-shell">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar" aria-label="Main navigation">
-    <div class="sidebar-logo">
-      <div class="logo-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></div>
-      <div class="logo-text">
-        <span class="logo-name">AccessRoute</span>
-        <span class="logo-tagline">Everyone included.</span>
-      </div>
-    </div>
-    <nav class="sidebar-nav" aria-label="Site navigation">
-      <div class="nav-section-label">Main</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span><span class="nav-label">Dashboard</span></a>
-      <a href="routes.html"    class="nav-item" data-page="routes.html">   <span class="nav-icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span><span class="nav-label">Plan Route</span></a>
-      <a href="facilities.html" class="nav-item" data-page="facilities.html"><span class="nav-icon"><i class="fa-solid fa-building" aria-hidden="true"></i></span><span class="nav-label">Facilities</span></a>
-      <a href="alerts.html"    class="nav-item" data-page="alerts.html">   <span class="nav-icon"><i class="fa-solid fa-bell" aria-hidden="true"></i></span><span class="nav-label">Live Alerts</span><span class="nav-badge alert-count">2</span></a>
-      <div class="nav-section-label">Personal</div>
-      <a href="profile.html"   class="nav-item" data-page="profile.html">  <span class="nav-icon"><i class="fa-solid fa-user-gear" aria-hidden="true"></i></span><span class="nav-label">Accessibility Profile</span></a>
-      <a href="settings.html"  class="nav-item" data-page="settings.html"> <span class="nav-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></span><span class="nav-label">Settings</span></a>
-      <div class="nav-section-label">Support</div>
-      <a href="#" class="nav-item" onclick="AR_toast('Help centre coming soon.','info','Help');return false;"><span class="nav-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></span><span class="nav-label">Help &amp; Support</span></a>
-      <a href="#" class="nav-item" onclick="AR_toast('Opening trusted contact…','info','Trusted Contact');return false;"><span class="nav-icon"><i class="fa-solid fa-heart" aria-hidden="true"></i></span><span class="nav-label">Trusted Contact</span></a>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="sidebar-user" role="button" tabindex="0" onclick="window.location='profile.html'">
-        <div class="user-avatar" aria-hidden="true">A</div>
-        <div class="user-info"><div class="user-name">Aditya</div><div class="user-role">Accessibility User</div></div>
-      </div>
-    </div>
-  </aside>
-
-  <div class="main-content">
-    <header class="topbar" role="banner">
-      <div class="topbar-left">
-        <button id="hamburger-btn" class="hamburger" aria-label="Open navigation menu" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
-        <div class="topbar-title">Plan Route</div>
-      </div>
-      <div class="topbar-right">
-        <button id="voice-toggle-btn" class="icon-btn" aria-label="Toggle voice guidance" aria-pressed="false"><i class="fa-solid fa-volume-xmark" aria-hidden="true"></i></button>
-        <a href="alerts.html" class="icon-btn" aria-label="View alerts"><i class="fa-solid fa-bell" aria-hidden="true"></i><span class="badge-dot notif-badge-dot" aria-hidden="true"></span></a>
-        <a href="settings.html" class="icon-btn" aria-label="Settings"><i class="fa-solid fa-sliders" aria-hidden="true"></i></a>
-      </div>
-    </header>
-
-    <main id="main-content" class="page-body">
-      <div class="page-header">
-        <h1 class="page-heading">Plan Accessible Route</h1>
-        <p class="page-subheading">Enter your journey details and we'll find the most accessible options for you.</p>
-      </div>
-
-      <div class="route-planner-layout">
-        <!-- Form -->
-        <div class="planner-form-card" role="search" aria-label="Route planning form">
-          <div class="form-section">
-            <div class="form-section-title">Journey</div>
-            <div class="location-connector" style="gap:0.5rem;">
-              <div class="location-row">
-                <div class="location-dot-from" aria-hidden="true"></div>
-                <div class="form-input-icon" style="flex:1;">
-                  <i class="fa-solid fa-location-crosshairs input-icon" aria-hidden="true"></i>
-                  <input id="input-from" class="form-input" type="text" value="Pune Station (Current Location)" placeholder="From: your location" aria-label="Journey origin" />
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0.5rem;padding-left:0.25rem;">
-                <div class="connector-line" aria-hidden="true"></div>
-                <button class="btn btn-outline btn-sm" onclick="AR_Routes.swapLocations()" aria-label="Swap origin and destination" style="margin-left:auto;">
-                  <i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i>
-                </button>
-              </div>
-              <div class="location-row">
-                <div class="location-dot-to" aria-hidden="true"></div>
-                <div class="form-input-icon" style="flex:1;">
-                  <i class="fa-solid fa-location-dot input-icon" aria-hidden="true" style="color:var(--color-danger);"></i>
-                  <input id="input-to" class="form-input" type="text" value="" placeholder="To: enter destination" aria-label="Journey destination" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="form-section">
-            <div class="form-section-title">Accessibility Requirements</div>
-            <fieldset style="border:none;padding:0;display:flex;flex-direction:column;gap:0.625rem;" aria-label="Accessibility requirements">
-              <legend class="sr-only">Accessibility requirements</legend>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-stepfree"  checked aria-label="Step-free route"> Step-free route</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-stairs"    checked aria-label="Avoid stairs"> Avoid stairs</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-lowfloor"  checked aria-label="Low-floor transport"> Low-floor transport</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-walking"   aria-label="Reduced walking"> Reduced walking distance</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-crowded"   aria-label="Avoid crowded areas"> Avoid crowded areas</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-toilet"    aria-label="Accessible toilet required"> Accessible toilet required</label>
-              <label class="checkbox-wrapper"><input type="checkbox" id="req-voice"     aria-label="Voice guidance"> Voice guidance</label>
-            </fieldset>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="form-section">
-            <div class="form-section-title">Transport Preference</div>
-            <div class="radio-group" role="radiogroup" aria-label="Transport preference" id="transport-preference">
-              <label class="radio-option selected">
-                <input type="radio" name="transport" value="mostAccessible" checked aria-label="Most accessible route"> Most Accessible
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="transport" value="fastest" aria-label="Fastest route"> Fastest
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="transport" value="leastWalking" aria-label="Least walking route"> Least Walking
-              </label>
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <button class="btn btn-accent btn-block btn-lg" id="btn-find-route" onclick="AR_Routes.findRoutes()" aria-label="Find accessible route">
-              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-              <span data-i18n="findRoute">Find Accessible Route</span>
-            </button>
-          </div>
-
-          <!-- Trusted Contact -->
-          <div class="divider"></div>
-          <div style="background:linear-gradient(135deg,#0d9488,#0891b2);border-radius:var(--radius-lg);padding:1rem;">
-            <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Trusted Contact</div>
-            <div style="font-weight:700;color:white;font-size:0.9rem;">Priya Sharma · Sister</div>
-            <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
-              <button class="tc-btn" data-action="share-journey" style="font-size:11px;flex:1;"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share Journey</button>
-              <button class="tc-btn" data-action="share-location" style="font-size:11px;flex:1;"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Location</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Results + Map -->
-        <div>
-          <!-- Map -->
-          <div class="card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
-            <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--color-border);font-weight:600;color:var(--color-text);">
-              <i class="fa-solid fa-map-location-dot" style="color:var(--color-accent);" aria-hidden="true"></i> Route Map
-            </div>
-            <div id="route-map" role="application" aria-label="Route planning map"></div>
-          </div>
-
-          <!-- Loading State -->
-          <div id="routes-loading" class="card" style="text-align:center;padding:2rem;display:none;" aria-live="polite" aria-label="Calculating routes">
-            <div class="spinner" style="margin:0 auto 1rem;" aria-hidden="true"></div>
-            <div style="font-weight:600;color:var(--color-text);">Calculating accessible routes…</div>
-            <div style="font-size:0.875rem;color:var(--color-text-muted);margin-top:0.25rem;">Checking elevators, ramps, and low-floor buses</div>
-          </div>
-
-          <!-- Results -->
-          <div id="route-results" class="route-results" role="list" aria-label="Available routes" aria-live="polite"></div>
-        </div>
-      </div>
-    </main>
+<div id="page-root">
+<main id="main-content" class="page-body">
+  <div class="page-header">
+    <h1 class="page-heading">Plan Accessible Route</h1>
+    <p class="page-sub">AI-powered route planning — optimised for your accessibility requirements.</p>
   </div>
+  <div style="background:var(--warning-bg);border:1px solid var(--warning);border-radius:var(--r-md);padding:.75rem 1rem;font-size:.75rem;color:var(--warning);display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;">
+    <i class="fa-solid fa-flask"></i> AI Route Engine — Prototype · Simulated data · Architecture ready for ML/optimization model
+  </div>
+
+  <div class="planner-layout">
+    <!-- Form -->
+    <div class="planner-form">
+      <div class="pf-sec">
+        <div class="pf-title">Journey</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <div class="loc-from"></div>
+            <div class="input-wrap" style="flex:1;"><i class="fa-solid fa-location-crosshairs input-icon"></i><input id="inp-from" class="form-input" type="text" value="Pune Station (Current Location)" aria-label="From"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;padding-left:1px;">
+            <div class="conn-line"></div>
+            <button class="btn btn-outline btn-sm" onclick="AR_Routes.swap()" style="margin-left:auto;" aria-label="Swap origin and destination"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <div class="loc-to"></div>
+            <div class="input-wrap" style="flex:1;"><i class="fa-solid fa-location-dot input-icon" style="color:var(--danger);"></i><input id="inp-to" class="form-input" type="text" placeholder="To: enter destination" aria-label="To"></div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="pf-sec">
+        <div class="pf-title">Accessibility Requirements</div>
+        <fieldset style="border:none;padding:0;">
+          <legend style="position:absolute;width:1px;height:1px;overflow:hidden;">Accessibility requirements</legend>
+          <label class="cb-row"><input type="checkbox" id="r-stepfree" checked> Step-free route</label>
+          <label class="cb-row"><input type="checkbox" id="r-stairs" checked> Avoid stairs</label>
+          <label class="cb-row"><input type="checkbox" id="r-lowfloor" checked> Low-floor transport</label>
+          <label class="cb-row"><input type="checkbox" id="r-elevator" checked> Accessible elevator</label>
+          <label class="cb-row"><input type="checkbox" id="r-walking"> Minimum walking</label>
+          <label class="cb-row"><input type="checkbox" id="r-crowded"> Avoid crowded areas</label>
+          <label class="cb-row"><input type="checkbox" id="r-toilet"> Accessible toilet required</label>
+          <label class="cb-row"><input type="checkbox" id="r-voice"> Voice guidance</label>
+        </fieldset>
+      </div>
+      <div class="divider"></div>
+      <div class="pf-sec">
+        <div class="pf-title">Transport Preference</div>
+        <div id="transport-pref">
+          <label class="radio-opt checked" onclick="AR_Routes.setPref(this,'mostAccessible')"><input type="radio" name="tpref" value="mostAccessible" checked> Most Accessible</label>
+          <label class="radio-opt" onclick="AR_Routes.setPref(this,'fastest')"><input type="radio" name="tpref" value="fastest"> Fastest</label>
+          <label class="radio-opt" onclick="AR_Routes.setPref(this,'leastWalking')"><input type="radio" name="tpref" value="leastWalking"> Least Walking</label>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-block btn-lg" id="btn-find-route" onclick="AR_Routes.find()"><i class="fa-solid fa-magnifying-glass"></i> Find Accessible Route</button>
+      <div class="divider"></div>
+      <div class="tc-card">
+        <div class="tc-lbl">Trusted Contact</div>
+        <div class="tc-name">Priya Sharma · Sister</div>
+        <div class="tc-actions" style="margin-top:.75rem;">
+          <button class="tc-btn" data-action="share-journey"><i class="fa-solid fa-share-nodes"></i> Share Journey</button>
+          <button class="tc-btn" data-action="share-location"><i class="fa-solid fa-location-dot"></i> Share Location</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results + Map -->
+    <div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
+        <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--border);font-weight:600;"><i class="fa-solid fa-map-location-dot" style="color:var(--teal);margin-right:.4rem;"></i>Route Map</div>
+        <div id="route-map" style="height:320px;" role="application" aria-label="Route planning map"></div>
+      </div>
+      <div id="routes-loading" class="card" style="text-align:center;padding:2rem;display:none;">
+        <div class="spinner" style="margin:0 auto 1rem;"></div>
+        <div style="font-weight:600;">AI Route Engine calculating accessible routes…</div>
+        <div style="font-size:.875rem;color:var(--text-m);margin-top:.25rem;">Checking elevators, ramps, low-floor buses and IoT sensors</div>
+      </div>
+      <div id="route-results" class="route-results" role="list" aria-live="polite"></div>
+    </div>
+  </div>
+</main>
 </div>
-
-<!-- Bottom Nav -->
-<nav class="bottom-nav" aria-label="Mobile navigation">
-  <div class="bottom-nav-items">
-    <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard.html"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><span>Dashboard</span></a>
-    <a href="routes.html"    class="bottom-nav-item active" data-page="routes.html" aria-current="page"><i class="fa-solid fa-route" aria-hidden="true"></i><span>Routes</span></a>
-    <a href="facilities.html" class="bottom-nav-item" data-page="facilities.html"><i class="fa-solid fa-building" aria-hidden="true"></i><span>Facilities</span></a>
-    <a href="alerts.html"    class="bottom-nav-item" data-page="alerts.html"><i class="fa-solid fa-bell" aria-hidden="true"></i><span>Alerts</span></a>
-    <a href="profile.html"   class="bottom-nav-item" data-page="profile.html"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Profile</span></a>
-  </div>
-</nav>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script src="js/routes.js"></script>
+<script src="js/nav.js?v=repair-1"></script>
+<script src="js/app.js?v=repair-1"></script>
+<script src="js/routes.js?v=repair-1"></script>
 </body>
 </html>
